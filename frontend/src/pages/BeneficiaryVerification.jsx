@@ -3,8 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Imported for programmatic redirection
 
 // COMPONENTS
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import AdminLayout from "../components/AdminLayout";
 
 function BeneficiaryVerification() {
   const navigate = useNavigate(); // Initialize navigation hook
@@ -81,85 +80,8 @@ function BeneficiaryVerification() {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f8fafc",
-        minHeight: "100vh",
-        width: "100%",
-        boxSizing: "border-box",
-      }}
-    >
-      {/* BRAND EMERALD HEADER BANNER WITH SIGN OUT */}
-      <div 
-        style={{ 
-          backgroundColor: "#004421", 
-          padding: "32px max(24px, 5%)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontFamily: "'Inter', -apple-system, sans-serif"
-        }}
-      >
-        <div>
-          <h1 
-            style={{ 
-              margin: "0 0 6px 0", 
-              fontSize: "32px", 
-              fontWeight: "800", 
-              color: "#ffffff",
-              letterSpacing: "-0.5px"
-            }}
-          >
-            QR-Based Beneficiary Verification
-          </h1>
-          <p 
-            style={{ 
-              margin: 0, 
-              fontSize: "14px", 
-              color: "#cbd5e1",
-              fontWeight: "400",
-              opacity: 0.95
-            }}
-          >
-            Verify and monitor relief beneficiaries
-          </p>
-        </div>
-
-        {/* ACTIVE SIGN OUT BUTTON */}
-        <button
-          onClick={handleLogout}
-          style={{
-            backgroundColor: "transparent",
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            padding: "8px 18px",
-            borderRadius: "6px",
-            fontSize: "14px",
-            fontWeight: "600",
-            cursor: "pointer",
-            transition: "all 0.15s ease"
-          }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = "rgba(255, 255, 255, 0.08)"}
-          onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
-        >
-          Sign Out
-        </button>
-      </div>
-
-      {/* NAVBAR WRAPPER */}
-      <div style={{ display: "block", width: "100%" }}>
-        <Navbar />
-      </div>
-
-      {/* MAIN CONTENT AREA */}
-      <div
-        style={{
-          padding: "40px max(24px, 5%)",
-          maxWidth: "1600px",
-          margin: "0 auto",
-          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        }}
-      >
+    <AdminLayout title={"QR-Based Beneficiary Verification"} subtitle={"Verify and monitor relief beneficiaries"}>
+      <div style={{ padding: "40px max(24px, 5%)", maxWidth: "1600px", margin: "0 auto", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
         {/* PANEL STRUCTURE */}
         <div
           style={{
@@ -296,9 +218,7 @@ function BeneficiaryVerification() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }
 

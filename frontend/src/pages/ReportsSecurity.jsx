@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 // COMPONENTS
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import AdminLayout from "../components/AdminLayout";
 
 function ReportsSecurity() {
   const [analytics, setAnalytics] = useState(null);
@@ -53,59 +52,8 @@ function ReportsSecurity() {
   }
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f8fafc",
-        minHeight: "100vh",
-        width: "100%",
-        boxSizing: "border-box",
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      }}
-    >
-      {/* BRAND EMERALD HEADER BANNER */}
-      <div 
-        style={{ 
-          backgroundColor: "#004421", 
-          padding: "40px max(24px, 5%)",
-          boxSizing: "border-box"
-        }}
-      >
-        <h1 
-          style={{ 
-            margin: "0 0 6px 0", 
-            fontSize: "32px", 
-            fontWeight: "800", 
-            color: "#ffffff",
-            letterSpacing: "-0.75px"
-          }}
-        >
-          Analytics & Reports Dashboard
-        </h1>
-        <p 
-          style={{ 
-            margin: 0, 
-            fontSize: "14px", 
-            color: "#cbd5e1",
-            fontWeight: "400",
-            letterSpacing: "-0.1px"
-          }}
-        >
-          Real-time System Monitoring, Security Logs, and Distribution Insights
-        </p>
-      </div>
-
-      {/* NAVBAR */}
-      <Navbar />
-
-      {/* MAIN CONTENT AREA */}
-      <div
-        style={{
-          padding: "40px max(24px, 5%)",
-          maxWidth: "1440px",
-          margin: "0 auto",
-          boxSizing: "border-box"
-        }}
-      >
+    <AdminLayout title={"Analytics & Reports Dashboard"} subtitle={"Real-time System Monitoring, Security Logs, and Distribution Insights"}>
+      <div style={{ padding: "40px max(24px, 5%)", maxWidth: "1440px", margin: "0 auto", boxSizing: "border-box" }}>
         {/* SUMMARY METRIC CARDS */}
         <div
           style={{
@@ -312,10 +260,7 @@ function ReportsSecurity() {
           </div>
         </div>
       </div>
-
-      {/* FOOTER */}
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }
 

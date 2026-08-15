@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 // COMPONENTS
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import AdminLayout from "../components/AdminLayout";
 
 const AdminReliefRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -39,16 +38,7 @@ const AdminReliefRequests = () => {
   };
 
   return (
-    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
-      
-      {/* EMERALD HEADER - LEFT ALIGNED */}
-      <div style={{ backgroundColor: "#004421", padding: "32px max(24px, 5%)" }}>
-        <h1 style={{ margin: 0, fontSize: "32px", fontWeight: "800", color: "#ffffff" }}>Relief Requests</h1>
-        <p style={{ margin: "6px 0 0 0", fontSize: "14px", color: "#cbd5e1" }}>Manage distribution status</p>
-      </div>
-
-      <Navbar />
-
+    <AdminLayout title={"Relief Requests"} subtitle={"Manage distribution status"}>
       <main style={{ padding: "40px max(24px, 5%)", maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
           
@@ -89,8 +79,7 @@ const AdminReliefRequests = () => {
           ))}
         </div>
       </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -3,8 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // COMPONENTS
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import AdminLayout from "../components/AdminLayout";
 
 function IncidentManagement() {
   const navigate = useNavigate();
@@ -56,74 +55,7 @@ function IncidentManagement() {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#f4f7f6",
-        minHeight: "100vh",
-        fontFamily: "'Inter', sans-serif",
-      }}
-    >
-      {/* FIXED HEADER - EXACT MATCH TO ADMIN DASHBOARD STYLE WITH ZERO OVERLAP */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #064e3b 0%, #022c22 100%)",
-          padding: "32px max(20px, 4%)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "20px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "28px",
-              fontWeight: "800",
-              color: "#ffffff",
-              lineHeight: "1.2",
-              letterSpacing: "-0.5px",
-            }}
-          >
-            Incident Management Workspace
-          </h1>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#a7f3d0",
-              opacity: 0.9,
-            }}
-          >
-            Verify, validate, and manage citizen incident reports
-          </p>
-        </div>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: "rgba(255, 255, 255, 0.1)",
-            color: "#ffffff",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            padding: "10px 20px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "600",
-            fontSize: "14px",
-            backdropFilter: "blur(4px)",
-            transition: "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => (e.target.style.background = "rgba(255,255,255,0.2)")}
-          onMouseLeave={(e) => (e.target.style.background = "rgba(255,255,255,0.1)")}
-        >
-          Sign Out
-        </button>
-      </div>
-
-      <Navbar />
-
+    <AdminLayout title={"Incident Management Workspace"} subtitle={"Verify, validate, and manage citizen incident reports"}>
       <div style={{ padding: "40px max(20px, 4%)" }}>
         {/* CONTAINER CARD */}
         <div
@@ -291,9 +223,7 @@ function IncidentManagement() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }
 

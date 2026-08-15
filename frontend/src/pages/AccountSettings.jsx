@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // COMPONENTS
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import AdminLayout from "../components/AdminLayout";
 
 function AccountSettings() {
   const navigate = useNavigate();
@@ -67,21 +66,7 @@ function AccountSettings() {
   };
 
   return (
-    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
-      
-      {/* BRAND EMERALD HEADER */}
-      <div style={{ backgroundColor: "#004421", padding: "32px max(24px, 5%)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "32px", fontWeight: "800", color: "#ffffff" }}>Account Settings</h1>
-          <p style={{ margin: "6px 0 0 0", fontSize: "14px", color: "#cbd5e1" }}>Manage your account security and profile</p>
-        </div>
-        <button onClick={handleLogout} style={{ backgroundColor: "transparent", color: "#ffffff", border: "1px solid rgba(255,255,255,0.2)", padding: "8px 18px", borderRadius: "6px", cursor: "pointer", fontWeight: "600" }}>
-          <span>↳</span> Sign Out
-        </button>
-      </div>
-
-      <Navbar />
-
+    <AdminLayout title={"Account Settings"} subtitle={"Manage your account security and profile"}>
       <div style={{ padding: "40px 20px", maxWidth: "500px", margin: "0 auto" }}>
         <div style={{ background: "#ffffff", padding: "32px", borderRadius: "16px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0" }}>
           
@@ -113,8 +98,7 @@ function AccountSettings() {
           </form>
         </div>
       </div>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }
 

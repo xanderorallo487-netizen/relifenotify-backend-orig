@@ -1,14 +1,8 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
-
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 // COMPONENTS
-import Header from "../components/Header";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import AdminLayout from "../components/AdminLayout";
 
 const AdminSupplyInventory = () => {
 
@@ -228,34 +222,8 @@ const AdminSupplyInventory = () => {
   };
 
   return (
-
-    <div
-      style={{
-        backgroundColor: "#f4f7f6",
-        minHeight: "100vh",
-        fontFamily: "'Inter', sans-serif"
-      }}
-    >
-
-      {/* HEADER WRAPPER WITH FIX FOR OVERLAPPING TEXT */}
-      <div style={{ paddingBottom: "10px", lineHeight: "1.4" }}>
-        <Header
-          title="Supply Inventory Management"
-          subtitle="Add and manage emergency supplies and relief goods"
-        />
-      </div>
-
-      {/* NAVBAR */}
-
-      <Navbar />
-
-      {/* CONTENT */}
-
-      <div
-        style={{
-          padding: "40px max(20px, 4%)"
-        }}
-      >
+    <AdminLayout title={"Supply Inventory Management"} subtitle={"Add and manage emergency supplies and relief goods"}>
+      <div style={{ padding: "40px max(20px, 4%)" }}>
 
         <div
           style={{
@@ -709,13 +677,7 @@ const AdminSupplyInventory = () => {
         </div>
 
       </div>
-
-      {/* FOOTER */}
-
-      <Footer />
-
-    </div>
-
+    </AdminLayout>
   );
 
 };
