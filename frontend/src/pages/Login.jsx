@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { loginUser } from "../services/authService";
+import api from "../services/api";
 
 // IMPORT YOUR IMAGE HERE
 import bgImage from "/src/assets/municipal-hall.png";
@@ -22,11 +22,15 @@ function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      await axios.post("http://localhost:5000/api/audit-logs/create", {
-        action_type: "LOGIN",
-        description: `${data.user.full_name} logged into the system`,
-        performed_by: data.user.full_name,
-      });
+      try {
+        await api.post("/audit-logs/create", {
+          action_type: "LOGIN",
+          description: `${data.user.full_name} logged into the system`,
+          performed_by: data.user.full_name,
+        });
+      } catch (auditError) {
+        console.error("Login audit log failed:", auditError);
+      }
 
       if (data.user.role === "admin") {
         navigate("/admin");

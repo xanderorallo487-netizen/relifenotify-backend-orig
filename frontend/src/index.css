@@ -55,12 +55,11 @@ body {
 }
 
 #root {
-  /* Make root fluid so the site can fill the viewport (fixes narrow centered layout on Vercel) */
   width: 100%;
-  max-width: 100%;
+  max-width: none;
   margin: 0;
-  padding: 0;
   text-align: left;
+  border-inline: none;
   min-height: 100svh;
   display: flex;
   flex-direction: column;

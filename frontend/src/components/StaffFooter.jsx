@@ -15,7 +15,7 @@ const StaffFooter = () => {
       }}
     >
 
-      © 2026 RELIEFNOTIFY | Disaster Response Management System
+      © 2026 RELIFENOTIFY | Disaster Response Management System
 
     </div>
 
