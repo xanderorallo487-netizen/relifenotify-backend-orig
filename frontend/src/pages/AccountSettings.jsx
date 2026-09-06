@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 
 // COMPONENTS
 import AdminLayout from "../components/AdminLayout";
@@ -24,9 +24,10 @@ function AccountSettings() {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/account-settings/me", {
+      const res = await api.get("/account-settings/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setFormData((prev) => ({
         ...prev,
         fullname: res.data.fullname,
@@ -47,15 +48,30 @@ function AccountSettings() {
     setMessage("");
 
     try {
-      const res = await axios.put("http://localhost:5000/api/account-settings/update", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMessage(res.data.message || "Profile updated successfully");
-      setFormData((prev) => ({ ...prev, currentPassword: "", newPassword: "" }));
+      const res = await api.put(
+        "/account-settings/update",
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setMessage(
+        res.data.message || "Profile updated successfully"
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        currentPassword: "",
+        newPassword: "",
+      }));
     } catch (err) {
       console.error(err);
       setIsError(true);
-      setMessage(err.response?.data?.error || "Failed to update account. Ensure password is correct.");
+      setMessage(
+        err.response?.data?.error ||
+          "Failed to update account. Ensure password is correct."
+      );
     }
   };
 
@@ -66,33 +82,118 @@ function AccountSettings() {
   };
 
   return (
-    <AdminLayout title={"Account Settings"} subtitle={"Manage your account security and profile"}>
-      <div style={{ padding: "40px 20px", maxWidth: "500px", margin: "0 auto" }}>
-        <div style={{ background: "#ffffff", padding: "32px", borderRadius: "16px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0" }}>
-          
+    <AdminLayout
+      title={"Account Settings"}
+      subtitle={"Manage your account security and profile"}
+    >
+      <div
+        style={{
+          padding: "40px 20px",
+          maxWidth: "500px",
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            background: "#ffffff",
+            padding: "32px",
+            borderRadius: "16px",
+            boxShadow:
+              "0 4px 6px -1px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
           {message && (
-            <div style={{ marginBottom: "20px", padding: "12px", borderRadius: "8px", backgroundColor: isError ? "#fef2f2" : "#f0fdf4", color: isError ? "#991b1b" : "#166534", fontSize: "14px", textAlign: "center" }}>
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "12px",
+                borderRadius: "8px",
+                backgroundColor: isError
+                  ? "#fef2f2"
+                  : "#f0fdf4",
+                color: isError
+                  ? "#991b1b"
+                  : "#166534",
+                fontSize: "14px",
+                textAlign: "center",
+              }}
+            >
               {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            {["fullname", "email", "currentPassword", "newPassword"].map((field) => (
-              <div key={field} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontSize: "13px", fontWeight: "600", color: "#475569", textTransform: "capitalize" }}>
-                  {field.replace(/([A-Z])/g, ' $1')}
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            {[
+              "fullname",
+              "email",
+              "currentPassword",
+              "newPassword",
+            ].map((field) => (
+              <div
+                key={field}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                }}
+              >
+                <label
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    color: "#475569",
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {field.replace(/([A-Z])/g, " $1")}
                 </label>
+
                 <input
-                  type={field.includes("Password") ? "password" : "text"}
+                  type={
+                    field.includes("Password")
+                      ? "password"
+                      : "text"
+                  }
                   name={field}
                   value={formData[field]}
                   onChange={handleChange}
-                  placeholder={field.includes("Password") ? "••••••••" : ""}
-                  style={{ padding: "12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "14px" }}
+                  placeholder={
+                    field.includes("Password")
+                      ? "••••••••"
+                      : ""
+                  }
+                  style={{
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #cbd5e1",
+                    fontSize: "14px",
+                  }}
                 />
               </div>
             ))}
-            <button type="submit" style={{ marginTop: "10px", padding: "12px", backgroundColor: "#004421", color: "#ffffff", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer" }}>
+
+            <button
+              type="submit"
+              style={{
+                marginTop: "10px",
+                padding: "12px",
+                backgroundColor: "#004421",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "8px",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+            >
               Save Changes
             </button>
           </form>

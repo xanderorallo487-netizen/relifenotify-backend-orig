@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 
 // COMPONENTS
 import AdminLayout from "../components/AdminLayout";
@@ -30,7 +30,7 @@ function AdminDashboard() {
 
   const fetchIncidents = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/incidents");
+      const response = await api.get("/incidents");
       if (response.data.success) setIncidents(response.data.incidents);
     } catch (error) {
       console.error("Failed to fetch incidents:", error);
@@ -41,7 +41,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users");
+      const response = await api.get("/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -50,7 +50,7 @@ function AdminDashboard() {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin-messages");
+      const response = await api.get("/admin-messages");
       setMessages(response.data);
     } catch (error) {
       console.error("Failed to fetch messages:", error);
@@ -61,7 +61,7 @@ function AdminDashboard() {
     e.preventDefault();
     try {
       const admin = JSON.parse(localStorage.getItem("user"));
-      await axios.post("http://localhost:5000/api/admin-messages", {
+      await api.post("/admin-messages", {
         sender_id: admin.id,
         sender_name: admin.full_name,
         receiver_id: messageForm.receiver_id,
@@ -76,7 +76,7 @@ function AdminDashboard() {
 
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/users/${id}`, { status });
+      await api.put(`/users/${id}`, { status });
       fetchUsers();
     } catch (error) {
       console.error("Failed to update status:", error);
@@ -85,7 +85,7 @@ function AdminDashboard() {
 
   const deleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${id}`);
+      await api.delete(`/users/${id}`);
       fetchUsers();
     } catch (error) {
       console.error("Failed to delete user:", error);

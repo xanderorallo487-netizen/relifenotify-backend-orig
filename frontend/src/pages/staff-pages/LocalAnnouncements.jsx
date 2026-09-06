@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -51,8 +51,8 @@ const LocalAnnouncements = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/local-announcements"
+        await api.get(
+          "/local-announcements"
         );
 
       setAnnouncements(response.data);
@@ -93,8 +93,8 @@ const LocalAnnouncements = () => {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/local-announcements",
+      await api.post(
+        "/local-announcements",
         formData
       );
 

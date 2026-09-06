@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom"; // Imported for programmatic redirection
 
 // COMPONENTS
@@ -35,7 +35,7 @@ function AlertBroadcasting() {
 
   const fetchAlerts = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/alerts");
+      const response = await api.get("/alerts");
 
       if (response.data.success) {
         setAlerts(response.data.alerts);
@@ -56,7 +56,7 @@ function AlertBroadcasting() {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/alerts", form);
+      await api.post("/alerts", form);
 
       setForm({
         title: "",

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 // COMPONENTS
 import AdminLayout from "../components/AdminLayout";
@@ -53,8 +53,8 @@ const AdminSupplyInventory = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/admin-supply-inventory"
+        await api.get(
+          "/admin-supply-inventory"
         );
 
       setInventory(response.data);
@@ -95,8 +95,8 @@ const AdminSupplyInventory = () => {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/admin-supply-inventory",
+      await api.post(
+        "/admin-supply-inventory",
         form
       );
 
@@ -148,8 +148,8 @@ const AdminSupplyInventory = () => {
 
       try {
 
-        await axios.delete(
-          `http://localhost:5000/api/admin-supply-inventory/${id}`
+        await api.delete(
+          `/admin-supply-inventory/${id}`
         );
 
         fetchInventory();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -33,8 +33,8 @@ const CommunityNeedsAssessment = () => {
 
   const fetchAssessments = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/community-needs-assessment"
+      const res = await api.get(
+        "/community-needs-assessment"
       );
       setAssessments(res.data);
     } catch (error) {
@@ -61,8 +61,8 @@ const CommunityNeedsAssessment = () => {
     e.preventDefault();
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/community-needs-assessment",
+      await api.post(
+        "/community-needs-assessment",
         form
       );
 

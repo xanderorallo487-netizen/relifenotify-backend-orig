@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom"; // Added for structural Sign Out redirection
 
 // COMPONENTS
@@ -48,8 +48,8 @@ const AdminEvacuationCenters = () => {
   // =====================================
   const fetchCenters = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/admin-evacuation-centers"
+      const response = await api.get(
+        "/admin-evacuation-centers"
       );
       setCenters(response.data);
     } catch (error) {
@@ -73,10 +73,11 @@ const AdminEvacuationCenters = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "http://localhost:5000/api/admin-evacuation-centers",
+      await api.post(
+        "/admin-evacuation-centers",
         form
       );
+
       fetchCenters();
       setForm({
         center_name: "",
@@ -105,8 +106,8 @@ const AdminEvacuationCenters = () => {
   // =====================================
   const deleteCenter = async (id) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/admin-evacuation-centers/${id}`
+      await api.delete(
+        `/admin-evacuation-centers/${id}`
       );
       fetchCenters();
     } catch (error) {

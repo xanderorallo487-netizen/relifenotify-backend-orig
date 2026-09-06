@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -54,8 +54,8 @@ const EvacueeAttendanceTracking = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/evacuee-attendance-tracking"
+        await api.get(
+          "/evacuee-attendance-tracking"
         );
 
       setEvacuees(response.data);
@@ -95,8 +95,8 @@ const EvacueeAttendanceTracking = () => {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/evacuee-attendance-tracking",
+      await api.post(
+        "/evacuee-attendance-tracking",
         form
       );
 
@@ -145,8 +145,8 @@ const EvacueeAttendanceTracking = () => {
 
     try {
 
-      await axios.put(
-        `http://localhost:5000/api/evacuee-attendance-tracking/${id}`,
+      await api.put(
+        `/evacuee-attendance-tracking/${id}`,
         {
 
           status,

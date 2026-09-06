@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom"; // Imported for programmatic redirection
 
 // COMPONENTS
@@ -28,8 +28,8 @@ function ReliefOperations() {
 
   const fetchOperations = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/relief-operations"
+      const response = await api.get(
+        "/relief-operations"
       );
 
       if (response.data.success) {

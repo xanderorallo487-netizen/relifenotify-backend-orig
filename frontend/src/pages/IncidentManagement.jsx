@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 // COMPONENTS
@@ -17,7 +17,7 @@ function IncidentManagement() {
 
   const fetchIncidents = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/incidents");
+      const response = await api.get("/incidents");
       if (response.data.success) {
         setIncidents(response.data.incidents);
       }
@@ -31,7 +31,7 @@ function IncidentManagement() {
   // APPROVE INCIDENT
   const approveIncident = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/incidents/approve/${id}`);
+      await api.put(`/incidents/approve/${id}`);
       fetchIncidents();
     } catch (error) {
       console.error(error);
@@ -41,7 +41,7 @@ function IncidentManagement() {
   // REJECT INCIDENT
   const rejectIncident = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/incidents/reject/${id}`);
+      await api.put(`/incidents/reject/${id}`);
       fetchIncidents();
     } catch (error) {
       console.error(error);

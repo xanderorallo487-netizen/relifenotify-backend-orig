@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -43,8 +43,8 @@ const SupplyInventoryMonitoring = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/supply-inventory-monitoring"
+        await api.get(
+          "/supply-inventory-monitoring"
         );
 
       setInventory(response.data);
@@ -107,8 +107,8 @@ const SupplyInventoryMonitoring = () => {
 
     try {
 
-      await axios.put(
-        `http://localhost:5000/api/supply-inventory-monitoring/${selectedItem.inventory_id}`,
+      await api.put(
+        `/supply-inventory-monitoring/${selectedItem.inventory_id}`,
         updateData
       );
 

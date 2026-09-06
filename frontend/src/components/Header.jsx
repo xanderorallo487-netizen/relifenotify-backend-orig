@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 
 function Header({
   title,
@@ -26,8 +26,8 @@ function Header({
         // SAVE AUDIT LOG
         if (user) {
 
-          await axios.post(
-            "http://localhost:5000/api/audit-logs/create",
+          await api.post(
+            "/audit-logs/create",
             {
               action_type:
                 "LOGOUT",
