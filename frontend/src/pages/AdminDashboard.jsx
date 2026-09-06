@@ -117,36 +117,93 @@ function AdminDashboard() {
     >
       <main className="admin-dashboard">
 
-        {/* HEADER */}
-        <header className="dashboard-header">
+        {/* TOP BAR */}
+        <header className="dashboard-topbar">
           <div>
-            <span className="eyebrow">OPERATIONS</span>
+            <span className="section-label">OVERVIEW</span>
             <h1>Command Center</h1>
-            <p>
-              Monitor incidents, coordinate personnel and manage system access.
-            </p>
           </div>
 
-          <div className="system-status">
-            <span /> System Operational
+          <div className="topbar-right">
+            <div className="system-status">
+              <span className="status-dot" />
+              System Operational
+            </div>
+
+            <button className="logout-btn" onClick={logout}>
+              Sign Out
+            </button>
           </div>
         </header>
 
-        {/* STATS */}
-        <div className="stats">
-          <Stat label="Total Incidents" value={total} />
-          <Stat label="Ongoing" value={ongoing} type="warning" />
-          <Stat label="Resolved" value={resolved} type="success" />
-          <Stat label="Affected Barangays" value={barangays} type="info" />
+        {/* INTRO */}
+        <div className="dashboard-intro">
+          <div>
+            <h2>Incident Overview</h2>
+            <p>
+              Monitor reported incidents, affected areas and response activity.
+            </p>
+          </div>
+
+          <div className="incident-count">
+            <strong>{total}</strong>
+            <span>Total Reports</span>
+          </div>
         </div>
 
-        {/* MAP */}
-        <section className="panel map-panel">
-          <PanelTitle
-            eyebrow="LIVE MONITORING"
-            title="Incident Map"
-            text="Current location of reported incidents."
+        {/* STATS */}
+        <div className="stats">
+          <Stat
+            label="Total Incidents"
+            value={total}
+            description="All recorded reports"
+            type="default"
           />
+
+          <Stat
+            label="Ongoing"
+            value={ongoing}
+            description="Currently requiring attention"
+            type="warning"
+          />
+
+          <Stat
+            label="Resolved"
+            value={resolved}
+            description="Successfully closed"
+            type="success"
+          />
+
+          <Stat
+            label="Affected Barangays"
+            value={barangays}
+            description="Locations with incidents"
+            type="info"
+          />
+        </div>
+
+        {/* MAIN MONITORING AREA */}
+        <section className="monitoring-card">
+
+          <div className="card-heading">
+            <div>
+              <span className="section-label">LIVE MONITORING</span>
+              <h2>Incident Map</h2>
+              <p>Current location of reported incidents.</p>
+            </div>
+
+            <div className="map-legend">
+              <span>
+                <i className="legend-red" />
+                Incident
+              </span>
+
+              <span>
+                <i className="legend-green" />
+                Operational
+              </span>
+            </div>
+          </div>
 
           <div className="map">
             {loading ? (
@@ -157,18 +214,22 @@ function AdminDashboard() {
           </div>
         </section>
 
-        {/* LOWER GRID */}
+        {/* LOWER AREA */}
         <div className="dashboard-grid">
 
           {/* DISPATCH */}
-          <section className="panel">
-            <PanelTitle
-              eyebrow="COMMUNICATIONS"
-              title="Staff Dispatch"
-              text="Send instructions to staff and responders."
-            />
+          <section className="content-card dispatch-card">
+
+            <div className="card-heading compact">
+              <div>
+                <span className="section-label">COMMUNICATIONS</span>
+                <h2>Staff Dispatch</h2>
+                <p>Send instructions to staff and responders.</p>
+              </div>
+            </div>
 
             <form onSubmit={handleSendMessage} className="dispatch-form">
+
               <label>
                 Recipient
                 <select
@@ -182,6 +243,7 @@ function AdminDashboard() {
                   required
                 >
                   <option value="">Select staff member</option>
+
                   {responders.map((user) => (
                     <option key={user.id} value={user.id}>
                       {user.full_name} ({user.role || "user"})
@@ -210,14 +272,17 @@ function AdminDashboard() {
                 Send Dispatch
                 <span>→</span>
               </button>
+
             </form>
 
             <div className="history">
+
               <div className="history-head">
                 <div>
                   <h3>Recent Dispatches</h3>
                   <small>Latest administrator messages</small>
                 </div>
+
                 <b>{messages.length}</b>
               </div>
 
@@ -228,28 +293,38 @@ function AdminDashboard() {
                   messages.map((msg) => (
                     <div className="message" key={msg.message_id}>
                       <strong>
-                        <span /> To {msg.receiver_name}
+                        <span />
+                        To {msg.receiver_name}
                       </strong>
+
                       <p>{msg.message}</p>
                     </div>
                   ))
                 )}
               </div>
+
             </div>
           </section>
 
           {/* USERS */}
-          <section className="panel">
-            <PanelTitle
-              eyebrow="ACCESS CONTROL"
-              title="User Accounts"
-              text="Manage operational account access."
-              count={users.length}
-            />
+          <section className="content-card users-card">
+
+            <div className="card-heading compact">
+              <div>
+                <span className="section-label">ACCESS CONTROL</span>
+                <h2>User Accounts</h2>
+                <p>Manage operational account access.</p>
+              </div>
+
+              <b className="count">{users.length}</b>
+            </div>
 
             <div className="users">
+
               {users.length === 0 ? (
-                <div className="empty">No user accounts found.</div>
+                <div className="empty">
+                  No user accounts found.
+                </div>
               ) : (
                 users.map((user) => {
                   const active =
@@ -257,6 +332,7 @@ function AdminDashboard() {
 
                   return (
                     <div className="user" key={user.id}>
+
                       <div className="avatar">
                         {user.full_name?.charAt(0).toUpperCase() || "U"}
                       </div>
@@ -270,16 +346,29 @@ function AdminDashboard() {
                         {user.role || "USER"}
                       </span>
 
-                      <span className={`status ${active ? "active" : "inactive"}`}>
+                      <span
+                        className={`status ${
+                          active ? "active" : "inactive"
+                        }`}
+                      >
                         {user.status || "Unknown"}
                       </span>
 
                       <div className="actions">
-                        <button onClick={() => updateStatus(user.id, "Active")}>
+
+                        <button
+                          onClick={() =>
+                            updateStatus(user.id, "Active")
+                          }
+                        >
                           Activate
                         </button>
 
-                        <button onClick={() => updateStatus(user.id, "Inactive")}>
+                        <button
+                          onClick={() =>
+                            updateStatus(user.id, "Inactive")
+                          }
+                        >
                           Deactivate
                         </button>
 
@@ -291,342 +380,560 @@ function AdminDashboard() {
                             Delete
                           </button>
                         )}
+
                       </div>
+
                     </div>
                   );
                 })
               )}
+
             </div>
           </section>
         </div>
+
       </main>
     </AdminLayout>
   );
 }
 
-function Stat({ label, value, type = "default" }) {
+function Stat({
+  label,
+  value,
+  description,
+  type = "default",
+}) {
   return (
     <div className={`stat ${type}`}>
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
 
-function PanelTitle({ eyebrow, title, text, count }) {
-  return (
-    <div className="panel-title">
-      <div>
-        <span className="eyebrow">{eyebrow}</span>
-        <h2>{title}</h2>
-        <p>{text}</p>
+      <div className="stat-top">
+        <span>{label}</span>
+        <i />
       </div>
 
-      {count !== undefined && <b className="count">{count}</b>}
+      <strong>{value}</strong>
+
+      <small>{description}</small>
+
     </div>
   );
 }
 
 const styles = `
+/* =========================================================
+   RELIFENOTIFY — ADMIN COMMAND CENTER
+   Visual design only
+   ========================================================= */
+
 .admin-dashboard {
-  padding: 24px clamp(18px, 3vw, 42px) 40px;
-  background: #f5f8f6;
-  color: #1d2b25;
+  min-height: 100%;
+  padding: 28px clamp(20px, 3vw, 44px) 42px;
+  background:
+    radial-gradient(circle at top right, rgba(12, 112, 70, .045), transparent 32%),
+    #f4f7f5;
+  color: #17231e;
 }
 
-/* HEADER */
-.dashboard-header {
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.dashboard-topbar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-end;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
-.eyebrow {
+.section-label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   color: #087443;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.2px;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
-.dashboard-header h1 {
+.dashboard-topbar h1 {
   margin: 0;
-  font-size: 26px;
-  font-weight: 750;
-  letter-spacing: -0.6px;
+  color: #13201a;
+  font-size: 27px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -.7px;
 }
 
-.dashboard-header p {
-  margin: 6px 0 0;
-  color: #6b7871;
-  font-size: 13px;
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .system-status {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 11px;
-  background: #fff;
-  border: 1px solid #dce6e0;
-  border-radius: 6px;
-  color: #53635b;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid #dbe5df;
+  border-radius: 9px;
+  background: rgba(255,255,255,.8);
+  color: #4c5b53;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0a9255;
+  box-shadow: 0 0 0 3px #e4f4eb;
+}
+
+.logout-btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 15px;
+  background: #087443;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.logout-btn:hover {
+  background: #065d36;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+.dashboard-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.dashboard-intro h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.25px;
+}
+
+.dashboard-intro p {
+  margin: 5px 0 0;
+  color: #748079;
   font-size: 11px;
+}
+
+.incident-count {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: #eaf4ee;
+}
+
+.incident-count strong {
+  color: #087443;
+  font-size: 12px;
+}
+
+.incident-count span {
+  color: #627168;
+  font-size: 9px;
   font-weight: 700;
 }
 
-.system-status span,
-.message strong span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #0a8f55;
-}
+/* =========================================================
+   STATISTICS
+   ========================================================= */
 
-/* STATS */
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
 .stat {
   position: relative;
-  padding: 16px 18px;
+  min-height: 103px;
+  padding: 15px 16px;
+  overflow: hidden;
+  border: 1px solid #dce5df;
+  border-radius: 11px;
   background: #fff;
-  border: 1px solid #dce6e0;
-  border-radius: 8px;
-  border-left: 3px solid #31584a;
+  box-shadow: 0 4px 15px rgba(22, 54, 39, .035);
 }
 
-.stat.warning {
-  border-left-color: #e28a18;
+.stat::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #294d3e;
 }
 
-.stat.success {
-  border-left-color: #087443;
+.stat.warning::before {
+  background: #df8617;
 }
 
-.stat.info {
-  border-left-color: #477b69;
+.stat.success::before {
+  background: #087443;
 }
 
-.stat span {
-  display: block;
-  color: #738078;
-  font-size: 11px;
-  font-weight: 700;
+.stat.info::before {
+  background: #3774df;
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-top span {
+  color: #6e7b74;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.stat-top i {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #edf0f1;
+}
+
+.stat.warning .stat-top i {
+  background: #fff0df;
+}
+
+.stat.success .stat-top i {
+  background: #e3f4eb;
+}
+
+.stat.info .stat-top i {
+  background: #e7edff;
 }
 
 .stat strong {
   display: block;
-  margin-top: 6px;
+  margin-top: 8px;
   color: #18251f;
   font-size: 27px;
   line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.7px;
 }
 
-/* PANELS */
-.panel {
-  padding: 20px;
+.stat small {
+  display: block;
+  margin-top: 6px;
+  color: #8a958f;
+  font-size: 9px;
+}
+
+/* =========================================================
+   MAIN MONITORING CARD
+   ========================================================= */
+
+.monitoring-card,
+.content-card {
+  border: 1px solid #dce5df;
+  border-radius: 12px;
   background: #fff;
-  border: 1px solid #dce6e0;
-  border-radius: 9px;
-  box-shadow: 0 1px 3px rgba(20, 50, 38, .03);
+  box-shadow: 0 5px 20px rgba(25, 55, 41, .035);
 }
 
-.map-panel {
-  margin-bottom: 16px;
+.monitoring-card {
+  padding: 18px;
+  margin-bottom: 15px;
 }
 
-.panel-title {
+.card-heading {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 15px;
-  margin-bottom: 14px;
+  gap: 20px;
+  margin-bottom: 13px;
 }
 
-.panel-title h2 {
+.card-heading.compact {
+  margin-bottom: 15px;
+}
+
+.card-heading h2 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 750;
-  color: #1c2b24;
+  color: #18251f;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -.2px;
 }
 
-.panel-title p {
+.card-heading p {
   margin: 4px 0 0;
-  color: #78847e;
-  font-size: 12px;
+  color: #7b8781;
+  font-size: 10px;
 }
 
-.count {
+.map-legend {
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
-  background: #edf5f0;
-  color: #087443;
-  border-radius: 5px;
-  font-size: 11px;
+  gap: 13px;
+  padding-top: 4px;
 }
 
-/* MAP */
+.map-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #6d7973;
+  font-size: 9px;
+}
+
+.map-legend i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.legend-red {
+  background: #dc3030;
+}
+
+.legend-green {
+  background: #0a9255;
+}
+
 .map {
-  height: 320px;
+  height: 300px;
   overflow: hidden;
-  border: 1px solid #dce6e0;
-  border-radius: 7px;
-  background: #f1f5f2;
+  border: 1px solid #dce5df;
+  border-radius: 9px;
+  background: #eef3ef;
 }
 
 .loading {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #718078;
-  font-size: 12px;
+  color: #78857e;
+  font-size: 11px;
 }
 
-/* LOWER GRID */
+/* =========================================================
+   LOWER GRID
+   ========================================================= */
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: .9fr 1.1fr;
-  gap: 16px;
+  gap: 15px;
 }
 
-/* FORM */
+.content-card {
+  min-width: 0;
+  padding: 18px;
+}
+
+/* =========================================================
+   DISPATCH
+   ========================================================= */
+
 .dispatch-form {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .dispatch-form label {
-  color: #4d5b54;
-  font-size: 10px;
+  display: block;
+  color: #56645c;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: .5px;
+  letter-spacing: .7px;
   text-transform: uppercase;
 }
 
 .dispatch-form select,
 .dispatch-form textarea {
+  display: block;
   width: 100%;
   box-sizing: border-box;
   margin-top: 5px;
-  padding: 9px 10px;
-  border: 1px solid #ccd9d1;
-  border-radius: 6px;
-  background: #fbfcfb;
-  color: #26342d;
-  font: inherit;
-  font-size: 12px;
+  border: 1px solid #d5dfd9;
+  border-radius: 7px;
+  background: #fafcfb;
+  color: #26352d;
+  font-family: inherit;
+  font-size: 11px;
   outline: none;
+  transition: .18s ease;
+}
+
+.dispatch-form select {
+  height: 35px;
+  padding: 0 9px;
 }
 
 .dispatch-form textarea {
+  min-height: 72px;
+  padding: 9px;
   resize: none;
 }
 
 .dispatch-form select:focus,
 .dispatch-form textarea:focus {
-  border-color: #0a8f55;
-  box-shadow: 0 0 0 2px rgba(10, 143, 85, .08);
+  border-color: #0a9255;
+  box-shadow: 0 0 0 3px rgba(10,146,85,.08);
+  background: #fff;
 }
 
 .send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   border: 0;
-  border-radius: 6px;
-  padding: 10px 14px;
+  border-radius: 7px;
+  padding: 10px 12px;
   background: #087443;
   color: #fff;
-  font-size: 12px;
-  font-weight: 750;
+  font-size: 10px;
+  font-weight: 800;
   cursor: pointer;
+  transition: .18s ease;
 }
 
 .send-btn:hover {
-  background: #065c36;
+  background: #065d36;
 }
 
 .send-btn span {
-  margin-left: 7px;
+  font-size: 14px;
 }
 
-/* HISTORY */
+/* =========================================================
+   DISPATCH HISTORY
+   ========================================================= */
+
 .history {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #e5ebe7;
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px solid #edf1ee;
 }
 
 .history-head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 9px;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .history-head h3 {
   margin: 0;
-  font-size: 12px;
+  color: #29372f;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .history-head small {
-  color: #8a9690;
-  font-size: 10px;
+  display: block;
+  margin-top: 2px;
+  color: #929c97;
+  font-size: 8px;
 }
 
-.history-head b {
-  padding: 4px 7px;
-  border-radius: 4px;
-  background: #f0f5f2;
+.history-head b,
+.count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 23px;
+  height: 23px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: #eaf4ee;
   color: #087443;
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .message-list {
-  max-height: 180px;
+  max-height: 145px;
   overflow-y: auto;
+  padding-right: 2px;
+}
+
+.message-list::-webkit-scrollbar,
+.users::-webkit-scrollbar {
+  width: 4px;
+}
+
+.message-list::-webkit-scrollbar-thumb,
+.users::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #cbd8d0;
 }
 
 .message {
-  padding: 9px 10px;
+  padding: 8px 9px;
   margin-bottom: 6px;
-  border: 1px solid #e1e9e4;
-  border-radius: 6px;
+  border: 1px solid #e4ebe6;
+  border-radius: 7px;
   background: #fafcfb;
+}
+
+.message:last-child {
+  margin-bottom: 0;
 }
 
 .message strong {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #46554d;
-  font-size: 10px;
+  color: #44534b;
+  font-size: 9px;
+}
+
+.message strong span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #0a9255;
 }
 
 .message p {
-  margin: 5px 0 0;
-  color: #6c7972;
-  font-size: 11px;
+  margin: 4px 0 0;
+  color: #727e78;
+  font-size: 10px;
   line-height: 1.45;
 }
 
-/* USERS */
+/* =========================================================
+   USERS
+   ========================================================= */
+
 .users {
-  max-height: 350px;
+  max-height: 305px;
   overflow-y: auto;
+  padding-right: 3px;
 }
 
 .user {
   display: grid;
-  grid-template-columns: 30px minmax(130px, 1fr) auto auto auto;
+  grid-template-columns: 31px minmax(100px, 1fr) auto auto auto;
   align-items: center;
   gap: 9px;
   padding: 9px 0;
@@ -640,13 +947,13 @@ const styles = `
 .avatar {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  background: #eaf4ee;
+  width: 31px;
+  height: 31px;
+  border-radius: 8px;
+  background: #e7f2ec;
   color: #087443;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 10px;
+  font-weight: 850;
 }
 
 .user-info {
@@ -662,38 +969,40 @@ const styles = `
 }
 
 .user-info strong {
-  color: #29372f;
-  font-size: 11px;
+  color: #26352d;
+  font-size: 10px;
+  font-weight: 750;
 }
 
 .user-info small {
   margin-top: 2px;
   color: #8a9690;
-  font-size: 9px;
+  font-size: 8px;
 }
 
 .role,
 .status {
   padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 8px;
-  font-weight: 800;
+  border-radius: 5px;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .3px;
   text-transform: uppercase;
 }
 
 .role {
-  background: #f1f4f2;
-  color: #65726b;
+  background: #f0f3f1;
+  color: #68756e;
 }
 
 .status.active {
-  background: #e9f7ef;
+  background: #e6f5ec;
   color: #087443;
 }
 
 .status.inactive {
-  background: #fff3df;
-  color: #b66a08;
+  background: #fff1dd;
+  color: #b76c0b;
 }
 
 .actions {
@@ -702,14 +1011,15 @@ const styles = `
 }
 
 .actions button {
-  padding: 5px 7px;
-  border: 1px solid #cfe0d6;
-  border-radius: 4px;
-  background: #f5faf7;
+  border: 1px solid #d2e0d7;
+  border-radius: 5px;
+  padding: 5px 6px;
+  background: #f6faf7;
   color: #087443;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 7px;
+  font-weight: 800;
   cursor: pointer;
+  transition: .15s ease;
 }
 
 .actions button:hover {
@@ -717,22 +1027,33 @@ const styles = `
 }
 
 .actions .delete {
-  border-color: #edcccc;
-  background: #fff7f7;
+  border-color: #edd0d0;
+  background: #fff8f8;
   color: #b42318;
 }
 
-.empty {
-  padding: 20px;
-  text-align: center;
-  color: #89958f;
-  font-size: 11px;
-  border: 1px dashed #d8e2dc;
-  border-radius: 6px;
+.actions .delete:hover {
+  background: #ffeded;
 }
 
-/* RESPONSIVE */
-@media (max-width: 1050px) {
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.empty {
+  padding: 18px;
+  border: 1px dashed #d8e2dc;
+  border-radius: 7px;
+  text-align: center;
+  color: #89958f;
+  font-size: 10px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
   .stats {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -740,24 +1061,50 @@ const styles = `
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
+
+  .map {
+    height: 290px;
+  }
 }
 
-@media (max-width: 650px) {
-  .dashboard-header {
+@media (max-width: 700px) {
+  .admin-dashboard {
+    padding: 20px 15px 30px;
+  }
+
+  .dashboard-topbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dashboard-intro {
+    align-items: flex-start;
   }
 
   .stats {
     grid-template-columns: 1fr 1fr;
   }
 
+  .monitoring-card,
+  .content-card {
+    padding: 14px;
+  }
+
   .map {
-    height: 280px;
+    height: 250px;
+  }
+
+  .map-legend {
+    display: none;
   }
 
   .user {
-    grid-template-columns: 30px 1fr auto;
+    grid-template-columns: 31px 1fr auto;
   }
 
   .user .role,
@@ -767,6 +1114,21 @@ const styles = `
 
   .actions {
     grid-column: 2 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-intro {
+    display: block;
+  }
+
+  .incident-count {
+    width: fit-content;
+    margin-top: 10px;
   }
 }
 `;
