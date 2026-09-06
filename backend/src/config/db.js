@@ -1,18 +1,21 @@
 const { Pool } = require("pg");
 require("dotenv").config();
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+const poolConfig = process.env.DATABASE_PUBLIC_URL
+  ? {
+      connectionString: process.env.DATABASE_PUBLIC_URL,
+      ssl: { rejectUnauthorized: false },
+    }
+  : {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      ssl: { rejectUnauthorized: false },
+    };
 
-  // Railway requires SSL
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+const pool = new Pool(poolConfig);
 
 // OPTIONAL DATABASE TEST
 pool.query("SELECT NOW()")
