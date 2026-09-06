@@ -6,7 +6,6 @@ import IncidentMap from "../components/IncidentMap";
 
 function AdminDashboard() {
   const navigate = useNavigate();
-
   const [incidents, setIncidents] = useState([]);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -117,92 +116,43 @@ function AdminDashboard() {
     >
       <main className="admin-dashboard">
 
-        {/* TOP BAR */}
-        <header className="dashboard-topbar">
+        <header className="dash-head">
           <div>
-            <span className="section-label">OVERVIEW</span>
-            <h1>Command Center</h1>
+            <span className="kicker">RELIFENOTIFY / OPERATIONS</span>
+            <h1>Good evening, Admin.</h1>
+            <p>Here is the current emergency response overview.</p>
           </div>
 
-          <div className="topbar-right">
-            <div className="system-status">
-              <span className="status-dot" />
-              System Operational
-            </div>
-
-            <button className="logout-btn" onClick={logout}>
-              Sign Out
-            </button>
+          <div className="live">
+            <span />
+            LIVE SYSTEM
           </div>
         </header>
 
-        {/* INTRO */}
-        <div className="dashboard-intro">
-          <div>
-            <h2>Incident Overview</h2>
-            <p>
-              Monitor reported incidents, affected areas and response activity.
-            </p>
+        <section className="overview">
+          <div className="overview-title">
+            <span className="kicker">FIELD OVERVIEW</span>
+            <h2>Incident activity</h2>
           </div>
 
-          <div className="incident-count">
-            <strong>{total}</strong>
-            <span>Total Reports</span>
+          <div className="stats">
+            <Stat label="Reports" value={total} />
+            <Stat label="Ongoing" value={ongoing} type="amber" />
+            <Stat label="Resolved" value={resolved} type="teal" />
+            <Stat label="Barangays" value={barangays} type="blue" />
           </div>
-        </div>
+        </section>
 
-        {/* STATS */}
-        <div className="stats">
-          <Stat
-            label="Total Incidents"
-            value={total}
-            description="All recorded reports"
-            type="default"
-          />
-
-          <Stat
-            label="Ongoing"
-            value={ongoing}
-            description="Currently requiring attention"
-            type="warning"
-          />
-
-          <Stat
-            label="Resolved"
-            value={resolved}
-            description="Successfully closed"
-            type="success"
-          />
-
-          <Stat
-            label="Affected Barangays"
-            value={barangays}
-            description="Locations with incidents"
-            type="info"
-          />
-        </div>
-
-        {/* MAIN MONITORING AREA */}
-        <section className="monitoring-card">
-
-          <div className="card-heading">
+        <section className="map-section">
+          <div className="map-head">
             <div>
-              <span className="section-label">LIVE MONITORING</span>
-              <h2>Incident Map</h2>
-              <p>Current location of reported incidents.</p>
+              <span className="kicker">LIVE MAP</span>
+              <h2>Incident activity zone</h2>
             </div>
 
-            <div className="map-legend">
-              <span>
-                <i className="legend-red" />
-                Incident
-              </span>
-
-              <span>
-                <i className="legend-green" />
-                Operational
-              </span>
-            </div>
+            <span className="map-note">
+              <i /> {ongoing} active response
+            </span>
           </div>
 
           <div className="map">
@@ -214,117 +164,81 @@ function AdminDashboard() {
           </div>
         </section>
 
-        {/* LOWER AREA */}
-        <div className="dashboard-grid">
+        <div className="bottom-grid">
 
-          {/* DISPATCH */}
-          <section className="content-card dispatch-card">
+          <section className="dispatch">
+            <span className="kicker">COMMUNICATIONS</span>
+            <h2>Dispatch staff</h2>
+            <p className="muted">Send instructions to field personnel.</p>
 
-            <div className="card-heading compact">
-              <div>
-                <span className="section-label">COMMUNICATIONS</span>
-                <h2>Staff Dispatch</h2>
-                <p>Send instructions to staff and responders.</p>
-              </div>
-            </div>
+            <form onSubmit={handleSendMessage}>
+              <select
+                value={messageForm.receiver_id}
+                onChange={(e) =>
+                  setMessageForm({
+                    ...messageForm,
+                    receiver_id: e.target.value,
+                  })
+                }
+                required
+              >
+                <option value="">Choose staff member</option>
+                {responders.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.full_name} ({user.role || "user"})
+                  </option>
+                ))}
+              </select>
 
-            <form onSubmit={handleSendMessage} className="dispatch-form">
+              <textarea
+                rows="3"
+                placeholder="Operational instructions..."
+                value={messageForm.message}
+                onChange={(e) =>
+                  setMessageForm({
+                    ...messageForm,
+                    message: e.target.value,
+                  })
+                }
+                required
+              />
 
-              <label>
-                Recipient
-                <select
-                  value={messageForm.receiver_id}
-                  onChange={(e) =>
-                    setMessageForm({
-                      ...messageForm,
-                      receiver_id: e.target.value,
-                    })
-                  }
-                  required
-                >
-                  <option value="">Select staff member</option>
-
-                  {responders.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.full_name} ({user.role || "user"})
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                Message
-                <textarea
-                  rows="3"
-                  placeholder="Enter operational instructions..."
-                  value={messageForm.message}
-                  onChange={(e) =>
-                    setMessageForm({
-                      ...messageForm,
-                      message: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </label>
-
-              <button className="send-btn" type="submit">
-                Send Dispatch
-                <span>→</span>
+              <button type="submit">
+                Send dispatch <span>↗</span>
               </button>
-
             </form>
 
-            <div className="history">
-
-              <div className="history-head">
-                <div>
-                  <h3>Recent Dispatches</h3>
-                  <small>Latest administrator messages</small>
-                </div>
-
-                <b>{messages.length}</b>
+            <div className="messages">
+              <div className="subhead">
+                <strong>Recent dispatches</strong>
+                <span>{messages.length}</span>
               </div>
 
-              <div className="message-list">
-                {messages.length === 0 ? (
-                  <div className="empty">No dispatches yet.</div>
-                ) : (
-                  messages.map((msg) => (
-                    <div className="message" key={msg.message_id}>
-                      <strong>
-                        <span />
-                        To {msg.receiver_name}
-                      </strong>
-
-                      <p>{msg.message}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-
+              {messages.length === 0 ? (
+                <div className="empty">No dispatches yet.</div>
+              ) : (
+                messages.map((msg) => (
+                  <div className="message" key={msg.message_id}>
+                    <small>TO {msg.receiver_name}</small>
+                    <p>{msg.message}</p>
+                  </div>
+                ))
+              )}
             </div>
           </section>
 
-          {/* USERS */}
-          <section className="content-card users-card">
-
-            <div className="card-heading compact">
+          <section className="accounts">
+            <div className="account-head">
               <div>
-                <span className="section-label">ACCESS CONTROL</span>
-                <h2>User Accounts</h2>
-                <p>Manage operational account access.</p>
+                <span className="kicker">ACCESS CONTROL</span>
+                <h2>Operational accounts</h2>
               </div>
-
-              <b className="count">{users.length}</b>
+              <strong>{users.length}</strong>
             </div>
 
             <div className="users">
-
               {users.length === 0 ? (
-                <div className="empty">
-                  No user accounts found.
-                </div>
+                <div className="empty">No user accounts found.</div>
               ) : (
                 users.map((user) => {
                   const active =
@@ -332,7 +246,6 @@ function AdminDashboard() {
 
                   return (
                     <div className="user" key={user.id}>
-
                       <div className="avatar">
                         {user.full_name?.charAt(0).toUpperCase() || "U"}
                       </div>
@@ -342,32 +255,19 @@ function AdminDashboard() {
                         <small>{user.email}</small>
                       </div>
 
-                      <span className="role">
-                        {user.role || "USER"}
-                      </span>
-
-                      <span
-                        className={`status ${
-                          active ? "active" : "inactive"
-                        }`}
-                      >
+                      <span className={`status ${active ? "active" : ""}`}>
                         {user.status || "Unknown"}
                       </span>
 
                       <div className="actions">
-
                         <button
-                          onClick={() =>
-                            updateStatus(user.id, "Active")
-                          }
+                          onClick={() => updateStatus(user.id, "Active")}
                         >
                           Activate
                         </button>
 
                         <button
-                          onClick={() =>
-                            updateStatus(user.id, "Inactive")
-                          }
+                          onClick={() => updateStatus(user.id, "Inactive")}
                         >
                           Deactivate
                         </button>
@@ -380,580 +280,354 @@ function AdminDashboard() {
                             Delete
                           </button>
                         )}
-
                       </div>
-
                     </div>
                   );
                 })
               )}
-
             </div>
           </section>
         </div>
-
       </main>
     </AdminLayout>
   );
 }
 
-function Stat({
-  label,
-  value,
-  description,
-  type = "default",
-}) {
+function Stat({ label, value, type = "" }) {
   return (
     <div className={`stat ${type}`}>
-
-      <div className="stat-top">
-        <span>{label}</span>
-        <i />
-      </div>
-
+      <span>{label}</span>
       <strong>{value}</strong>
-
-      <small>{description}</small>
-
     </div>
   );
 }
 
 const styles = `
-/* =========================================================
-   RELIFENOTIFY — ADMIN COMMAND CENTER
-   Visual design only
-   ========================================================= */
-
 .admin-dashboard {
   min-height: 100%;
-  padding: 28px clamp(20px, 3vw, 44px) 42px;
+  padding: 30px clamp(20px, 4vw, 52px) 45px;
   background:
-    radial-gradient(circle at top right, rgba(12, 112, 70, .045), transparent 32%),
-    #f4f7f5;
-  color: #17231e;
+    radial-gradient(circle at 85% 5%, #dcefe7 0, transparent 28%),
+    #f5f7f4;
+  color: #17241f;
 }
 
-/* =========================================================
-   TOP BAR
-   ========================================================= */
+/* HEADER */
 
-.dashboard-topbar {
+.dash-head,
+.map-head,
+.account-head,
+.subhead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 28px;
 }
 
-.section-label {
-  display: block;
-  margin-bottom: 6px;
-  color: #087443;
+.kicker {
+  color: #08744a;
   font-size: 9px;
-  font-weight: 850;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 1.6px;
 }
 
-.dashboard-topbar h1 {
+.dash-head h1 {
+  margin: 7px 0 3px;
+  font-size: 29px;
+  letter-spacing: -1px;
+}
+
+.dash-head p,
+.muted {
   margin: 0;
-  color: #13201a;
-  font-size: 27px;
-  line-height: 1.1;
-  font-weight: 800;
-  letter-spacing: -.7px;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.system-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border: 1px solid #dbe5df;
-  border-radius: 9px;
-  background: rgba(255,255,255,.8);
-  color: #4c5b53;
-  font-size: 10px;
-  font-weight: 750;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #0a9255;
-  box-shadow: 0 0 0 3px #e4f4eb;
-}
-
-.logout-btn {
-  border: 0;
-  border-radius: 8px;
-  padding: 10px 15px;
-  background: #087443;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 750;
-  cursor: pointer;
-  transition: .18s ease;
-}
-
-.logout-btn:hover {
-  background: #065d36;
-  transform: translateY(-1px);
-}
-
-/* =========================================================
-   INTRO
-   ========================================================= */
-
-.dashboard-intro {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 15px;
-}
-
-.dashboard-intro h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -.25px;
-}
-
-.dashboard-intro p {
-  margin: 5px 0 0;
-  color: #748079;
+  color: #78847e;
   font-size: 11px;
 }
 
-.incident-count {
+.live {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 9px;
-  border-radius: 7px;
-  background: #eaf4ee;
+  padding: 8px 11px;
+  border-radius: 20px;
+  background: #e2f3e9;
+  color: #08744a;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .8px;
 }
 
-.incident-count strong {
-  color: #087443;
-  font-size: 12px;
+.live span,
+.map-note i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0b9a60;
 }
 
-.incident-count span {
-  color: #627168;
-  font-size: 9px;
-  font-weight: 700;
+/* OVERVIEW */
+
+.overview {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 20px;
+  align-items: end;
+  margin: 35px 0 18px;
 }
 
-/* =========================================================
-   STATISTICS
-   ========================================================= */
+.overview h2,
+.map-head h2,
+.dispatch h2,
+.accounts h2 {
+  margin: 5px 0 0;
+  font-size: 17px;
+  letter-spacing: -.3px;
+}
 
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 8px;
 }
 
 .stat {
   position: relative;
-  min-height: 103px;
-  padding: 15px 16px;
+  min-height: 74px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: #e9efeb;
   overflow: hidden;
-  border: 1px solid #dce5df;
-  border-radius: 11px;
-  background: #fff;
-  box-shadow: 0 4px 15px rgba(22, 54, 39, .035);
 }
 
-.stat::before {
+.stat::after {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #294d3e;
-}
-
-.stat.warning::before {
-  background: #df8617;
-}
-
-.stat.success::before {
-  background: #087443;
-}
-
-.stat.info::before {
-  background: #3774df;
-}
-
-.stat-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.stat-top span {
-  color: #6e7b74;
-  font-size: 10px;
-  font-weight: 750;
-}
-
-.stat-top i {
-  width: 17px;
-  height: 17px;
+  right: -18px;
+  bottom: -24px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
-  background: #edf0f1;
+  background: #d9e8df;
 }
 
-.stat.warning .stat-top i {
-  background: #fff0df;
-}
-
-.stat.success .stat-top i {
-  background: #e3f4eb;
-}
-
-.stat.info .stat-top i {
-  background: #e7edff;
+.stat span {
+  color: #68766f;
+  font-size: 9px;
+  font-weight: 750;
 }
 
 .stat strong {
   display: block;
-  margin-top: 8px;
-  color: #18251f;
-  font-size: 27px;
+  margin-top: 7px;
+  font-size: 25px;
   line-height: 1;
-  font-weight: 800;
-  letter-spacing: -.7px;
 }
 
-.stat small {
-  display: block;
-  margin-top: 6px;
-  color: #8a958f;
-  font-size: 9px;
+.stat.amber {
+  background: #f8ead5;
 }
 
-/* =========================================================
-   MAIN MONITORING CARD
-   ========================================================= */
-
-.monitoring-card,
-.content-card {
-  border: 1px solid #dce5df;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 5px 20px rgba(25, 55, 41, .035);
+.stat.amber::after {
+  background: #f1d5ae;
 }
 
-.monitoring-card {
-  padding: 18px;
-  margin-bottom: 15px;
+.stat.amber strong {
+  color: #c16b0b;
 }
 
-.card-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 13px;
+.stat.teal {
+  background: #dcefeb;
 }
 
-.card-heading.compact {
-  margin-bottom: 15px;
+.stat.teal::after {
+  background: #c7e4dc;
 }
 
-.card-heading h2 {
-  margin: 0;
-  color: #18251f;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -.2px;
+.stat.teal strong {
+  color: #087c70;
 }
 
-.card-heading p {
-  margin: 4px 0 0;
-  color: #7b8781;
-  font-size: 10px;
+.stat.blue {
+  background: #e5e8f5;
 }
 
-.map-legend {
+.stat.blue::after {
+  background: #d4d9ec;
+}
+
+.stat.blue strong {
+  color: #5665a5;
+}
+
+/* MAP */
+
+.map-section {
+  padding: 20px 0 0;
+}
+
+.map-head {
+  margin-bottom: 12px;
+}
+
+.map-note {
   display: flex;
   align-items: center;
-  gap: 13px;
-  padding-top: 4px;
-}
-
-.map-legend span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #6d7973;
+  gap: 6px;
+  color: #68756e;
   font-size: 9px;
-}
-
-.map-legend i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.legend-red {
-  background: #dc3030;
-}
-
-.legend-green {
-  background: #0a9255;
+  font-weight: 700;
 }
 
 .map {
-  height: 300px;
+  height: 335px;
   overflow: hidden;
-  border: 1px solid #dce5df;
-  border-radius: 9px;
-  background: #eef3ef;
+  border-radius: 16px;
+  border: 1px solid #d7e1da;
+  background: #e8eee9;
+  box-shadow: 0 12px 30px rgba(31, 67, 49, .07);
 }
 
 .loading {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #78857e;
+  color: #718078;
   font-size: 11px;
 }
 
-/* =========================================================
-   LOWER GRID
-   ========================================================= */
+/* LOWER */
 
-.dashboard-grid {
+.bottom-grid {
   display: grid;
-  grid-template-columns: .9fr 1.1fr;
-  gap: 15px;
+  grid-template-columns: .8fr 1.2fr;
+  gap: 35px;
+  margin-top: 28px;
 }
 
-.content-card {
-  min-width: 0;
-  padding: 18px;
+.dispatch {
+  padding: 4px 0;
 }
 
-/* =========================================================
-   DISPATCH
-   ========================================================= */
-
-.dispatch-form {
+.dispatch form {
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 15px;
 }
 
-.dispatch-form label {
-  display: block;
-  color: #56645c;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .7px;
-  text-transform: uppercase;
-}
-
-.dispatch-form select,
-.dispatch-form textarea {
-  display: block;
+.dispatch select,
+.dispatch textarea {
   width: 100%;
   box-sizing: border-box;
-  margin-top: 5px;
-  border: 1px solid #d5dfd9;
-  border-radius: 7px;
-  background: #fafcfb;
-  color: #26352d;
-  font-family: inherit;
-  font-size: 11px;
+  border: 1px solid #d4ded8;
+  border-radius: 9px;
+  background: #fff;
+  padding: 10px;
+  color: #24332b;
+  font: inherit;
+  font-size: 10px;
   outline: none;
-  transition: .18s ease;
 }
 
-.dispatch-form select {
-  height: 35px;
-  padding: 0 9px;
-}
-
-.dispatch-form textarea {
-  min-height: 72px;
-  padding: 9px;
+.dispatch textarea {
   resize: none;
 }
 
-.dispatch-form select:focus,
-.dispatch-form textarea:focus {
-  border-color: #0a9255;
-  box-shadow: 0 0 0 3px rgba(10,146,85,.08);
-  background: #fff;
+.dispatch select:focus,
+.dispatch textarea:focus {
+  border-color: #168c68;
+  box-shadow: 0 0 0 3px #dcefe7;
 }
 
-.send-btn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
+.dispatch form button {
   border: 0;
-  border-radius: 7px;
-  padding: 10px 12px;
-  background: #087443;
+  border-radius: 9px;
+  padding: 10px 13px;
+  background: #173f32;
   color: #fff;
   font-size: 10px;
   font-weight: 800;
   cursor: pointer;
-  transition: .18s ease;
+  text-align: left;
 }
 
-.send-btn:hover {
-  background: #065d36;
+.dispatch form button span {
+  float: right;
+  font-size: 13px;
 }
 
-.send-btn span {
-  font-size: 14px;
+.messages {
+  margin-top: 20px;
 }
 
-/* =========================================================
-   DISPATCH HISTORY
-   ========================================================= */
-
-.history {
-  margin-top: 15px;
-  padding-top: 13px;
-  border-top: 1px solid #edf1ee;
+.subhead {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dfe6e1;
+  font-size: 10px;
 }
 
-.history-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.history-head h3 {
-  margin: 0;
-  color: #29372f;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.history-head small {
-  display: block;
-  margin-top: 2px;
-  color: #929c97;
-  font-size: 8px;
-}
-
-.history-head b,
-.count {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 23px;
-  height: 23px;
-  box-sizing: border-box;
-  border-radius: 6px;
-  background: #eaf4ee;
-  color: #087443;
+.subhead span,
+.account-head > strong {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: #e2f1eb;
+  color: #08744a;
   font-size: 9px;
-}
-
-.message-list {
-  max-height: 145px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.message-list::-webkit-scrollbar,
-.users::-webkit-scrollbar {
-  width: 4px;
-}
-
-.message-list::-webkit-scrollbar-thumb,
-.users::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: #cbd8d0;
 }
 
 .message {
-  padding: 8px 9px;
-  margin-bottom: 6px;
-  border: 1px solid #e4ebe6;
-  border-radius: 7px;
-  background: #fafcfb;
+  padding: 9px 0;
+  border-bottom: 1px solid #e4e9e5;
 }
 
-.message:last-child {
-  margin-bottom: 0;
-}
-
-.message strong {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #44534b;
-  font-size: 9px;
-}
-
-.message strong span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #0a9255;
+.message small {
+  color: #0b8b61;
+  font-size: 7px;
+  font-weight: 900;
 }
 
 .message p {
-  margin: 4px 0 0;
-  color: #727e78;
+  margin: 3px 0 0;
+  color: #68766e;
   font-size: 10px;
-  line-height: 1.45;
 }
 
-/* =========================================================
-   USERS
-   ========================================================= */
+/* ACCOUNTS */
+
+.accounts {
+  min-width: 0;
+}
+
+.account-head {
+  margin-bottom: 12px;
+}
 
 .users {
-  max-height: 305px;
+  max-height: 255px;
   overflow-y: auto;
-  padding-right: 3px;
+  padding-right: 5px;
 }
 
 .user {
   display: grid;
-  grid-template-columns: 31px minmax(100px, 1fr) auto auto auto;
+  grid-template-columns: 32px 1fr auto auto;
   align-items: center;
-  gap: 9px;
-  padding: 9px 0;
-  border-bottom: 1px solid #edf1ee;
-}
-
-.user:last-child {
-  border-bottom: 0;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #dfe6e1;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 31px;
-  height: 31px;
-  border-radius: 8px;
-  background: #e7f2ec;
-  color: #087443;
-  font-size: 10px;
-  font-weight: 850;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #dce9e3;
+  color: #08744a;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .user-info {
@@ -969,40 +643,28 @@ const styles = `
 }
 
 .user-info strong {
-  color: #26352d;
   font-size: 10px;
-  font-weight: 750;
 }
 
 .user-info small {
   margin-top: 2px;
-  color: #8a9690;
+  color: #89938e;
   font-size: 8px;
 }
 
-.role,
 .status {
-  padding: 4px 6px;
-  border-radius: 5px;
+  padding: 4px 7px;
+  border-radius: 20px;
+  background: #f8e6d9;
+  color: #b85d2b;
   font-size: 7px;
-  font-weight: 850;
-  letter-spacing: .3px;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
-.role {
-  background: #f0f3f1;
-  color: #68756e;
-}
-
 .status.active {
-  background: #e6f5ec;
-  color: #087443;
-}
-
-.status.inactive {
-  background: #fff1dd;
-  color: #b76c0b;
+  background: #dff2e8;
+  color: #08744a;
 }
 
 .actions {
@@ -1011,124 +673,68 @@ const styles = `
 }
 
 .actions button {
-  border: 1px solid #d2e0d7;
-  border-radius: 5px;
-  padding: 5px 6px;
-  background: #f6faf7;
-  color: #087443;
+  border: 1px solid #d3dfd8;
+  border-radius: 6px;
+  padding: 5px 7px;
+  background: transparent;
+  color: #356453;
   font-size: 7px;
   font-weight: 800;
   cursor: pointer;
-  transition: .15s ease;
 }
 
 .actions button:hover {
-  background: #e7f3ec;
+  background: #e4f0ea;
 }
 
 .actions .delete {
-  border-color: #edd0d0;
-  background: #fff8f8;
-  color: #b42318;
+  border-color: #eccfca;
+  color: #bd493d;
 }
-
-.actions .delete:hover {
-  background: #ffeded;
-}
-
-/* =========================================================
-   EMPTY
-   ========================================================= */
 
 .empty {
-  padding: 18px;
-  border: 1px dashed #d8e2dc;
-  border-radius: 7px;
-  text-align: center;
+  padding: 15px 0;
   color: #89958f;
   font-size: 10px;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+/* RESPONSIVE */
 
-@media (max-width: 1100px) {
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-grid {
+@media (max-width: 1000px) {
+  .overview {
     grid-template-columns: 1fr;
   }
 
-  .map {
-    height: 290px;
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 700px) {
-  .admin-dashboard {
-    padding: 20px 15px 30px;
-  }
-
-  .dashboard-topbar {
+@media (max-width: 650px) {
+  .dash-head {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .topbar-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .dashboard-intro {
-    align-items: flex-start;
+    gap: 15px;
   }
 
   .stats {
     grid-template-columns: 1fr 1fr;
   }
 
-  .monitoring-card,
-  .content-card {
-    padding: 14px;
-  }
-
   .map {
-    height: 250px;
-  }
-
-  .map-legend {
-    display: none;
+    height: 260px;
   }
 
   .user {
-    grid-template-columns: 31px 1fr auto;
-  }
-
-  .user .role,
-  .user .status {
-    display: none;
+    grid-template-columns: 32px 1fr auto;
   }
 
   .actions {
     grid-column: 2 / -1;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-intro {
-    display: block;
-  }
-
-  .incident-count {
-    width: fit-content;
-    margin-top: 10px;
   }
 }
 `;
