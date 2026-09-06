@@ -13,8 +13,8 @@
 
 .admin-root { background-color: var(--admin-bg); color: #0f172a; font-family: var(--admin-font); }
 .admin-header { background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-2) 100%); color: white; padding: 18px 24px; display:flex; align-items:center; justify-content:space-between; box-shadow: 0 6px 18px rgba(6,78,59,0.08); }
-.admin-header h1{ font-size:20px; margin:0; font-weight:800; color:#ffffff !important; }
-.admin-header p{ margin:4px 0 0 0; font-size:13px; color:#ffffff !important; }
+.admin-header h1{ font-size:20px; margin:0; font-weight:800; }
+.admin-header p{ margin:4px 0 0 0; font-size:13px; color:#cfeedd; }
 .admin-main{ display:flex; align-items:flex-start; }
 .admin-sidebar{ width:260px; background:var(--admin-surface); border-right:1px solid var(--admin-border); padding:18px; box-sizing:border-box; position:sticky; top:72px; height:calc(100vh - 72px); }
 .admin-content{ flex:1; padding:28px 32px; box-sizing:border-box; }
