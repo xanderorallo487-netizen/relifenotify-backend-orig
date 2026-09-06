@@ -1,30 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-
-// COMPONENTS
 import AdminLayout from "../components/AdminLayout";
 import IncidentMap from "../components/IncidentMap";
 
 function AdminDashboard() {
   const navigate = useNavigate();
 
-  // =====================================
-  // STATES
-  // =====================================
   const [incidents, setIncidents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [messageForm, setMessageForm] = useState({
     receiver_id: "",
     message: "",
   });
-  const [btnHover, setBtnHover] = useState(false);
 
-  // =====================================
-  // FETCH DATA
-  // =====================================
   useEffect(() => {
     fetchIncidents();
     fetchUsers();
@@ -33,11 +24,8 @@ function AdminDashboard() {
 
   const fetchIncidents = async () => {
     try {
-      const response = await api.get("/incidents");
-
-      if (response.data.success) {
-        setIncidents(response.data.incidents);
-      }
+      const { data } = await api.get("/incidents");
+      if (data.success) setIncidents(data.incidents);
     } catch (error) {
       console.error("Failed to fetch incidents:", error);
     } finally {
@@ -47,8 +35,8 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get("/users");
-      setUsers(response.data);
+      const { data } = await api.get("/users");
+      setUsers(data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
     }
@@ -56,16 +44,13 @@ function AdminDashboard() {
 
   const fetchMessages = async () => {
     try {
-      const response = await api.get("/admin-messages");
-      setMessages(response.data);
+      const { data } = await api.get("/admin-messages");
+      setMessages(data);
     } catch (error) {
       console.error("Failed to fetch messages:", error);
     }
   };
 
-  // =====================================
-  // MESSAGE HANDLING
-  // =====================================
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
@@ -79,20 +64,13 @@ function AdminDashboard() {
         message: messageForm.message,
       });
 
-      setMessageForm({
-        receiver_id: "",
-        message: "",
-      });
-
+      setMessageForm({ receiver_id: "", message: "" });
       fetchMessages();
     } catch (error) {
       console.error("Failed to send message:", error);
     }
   };
 
-  // =====================================
-  // USER MANAGEMENT
-  // =====================================
   const updateStatus = async (id, status) => {
     try {
       await api.put(`/users/${id}`, { status });
@@ -111,208 +89,88 @@ function AdminDashboard() {
     }
   };
 
-  // =====================================
-  // LOGOUT
-  // =====================================
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
 
-  // =====================================
-  // DASHBOARD COUNTS
-  // =====================================
-  const totalIncidents = incidents.length;
-
-  const ongoingIncidents = incidents.filter(
-    (incident) => incident.status?.toLowerCase() === "ongoing"
+  const total = incidents.length;
+  const ongoing = incidents.filter(
+    (i) => i.status?.toLowerCase() === "ongoing"
   ).length;
-
-  const resolvedIncidents = incidents.filter(
-    (incident) => incident.status?.toLowerCase() === "resolved"
+  const resolved = incidents.filter(
+    (i) => i.status?.toLowerCase() === "resolved"
   ).length;
+  const barangays = new Set(
+    incidents.map((i) => i.barangay).filter(Boolean)
+  ).size;
 
-  const affectedBarangays = [
-    ...new Set(
-      incidents
-        .map((incident) => incident.barangay)
-        .filter(Boolean)
-    ),
-  ].length;
-
-  // =====================================
-  // MESSAGE RECIPIENTS
-  // =====================================
-  const potentialResponders = users.filter((user) => {
-    const role = user.role?.toLowerCase();
-
-    return (
-      role === "staff" ||
-      role === "responder" ||
-      role === "user" ||
-      role !== "admin"
-    );
-  });
+  const responders = users.filter(
+    (u) => u.role?.toLowerCase() !== "admin"
+  );
 
   return (
     <AdminLayout
       title="ReLifeNotify Admin Dashboard"
-      subtitle="Real-Time Incident Monitoring & Team Coordination"
+      subtitle="Incident monitoring and response coordination"
     >
-      <div style={pageStyle}>
+      <main className="admin-dashboard">
 
-        {/* =====================================
-            PAGE INTRO
-        ===================================== */}
-        <div style={introStyle}>
+        {/* HEADER */}
+        <header className="dashboard-header">
           <div>
-            <div style={eyebrowStyle}>OPERATIONS OVERVIEW</div>
-
-            <h1 style={pageTitleStyle}>
-              Incident Command Center
-            </h1>
-
-            <p style={pageDescriptionStyle}>
-              Monitor active incidents, coordinate personnel, and manage
-              operational accounts from one workspace.
+            <span className="eyebrow">OPERATIONS</span>
+            <h1>Command Center</h1>
+            <p>
+              Monitor incidents, coordinate personnel and manage system access.
             </p>
           </div>
 
-          <div style={statusIndicatorStyle}>
-            <span style={statusDotStyle}></span>
-            <span>System Operational</span>
+          <div className="system-status">
+            <span /> System Operational
           </div>
+        </header>
+
+        {/* STATS */}
+        <div className="stats">
+          <Stat label="Total Incidents" value={total} />
+          <Stat label="Ongoing" value={ongoing} type="warning" />
+          <Stat label="Resolved" value={resolved} type="success" />
+          <Stat label="Affected Barangays" value={barangays} type="info" />
         </div>
 
-        {/* =====================================
-            SUMMARY STATISTICS
-        ===================================== */}
-        <div style={statsGridStyle}>
-
-          <StatCard
-            label="Total Incidents"
-            value={totalIncidents}
-            detail="All recorded incidents"
-            accent="#1e293b"
+        {/* MAP */}
+        <section className="panel map-panel">
+          <PanelTitle
+            eyebrow="LIVE MONITORING"
+            title="Incident Map"
+            text="Current location of reported incidents."
           />
 
-          <StatCard
-            label="Ongoing"
-            value={ongoingIncidents}
-            detail="Currently requiring attention"
-            accent="#b45309"
-          />
-
-          <StatCard
-            label="Resolved"
-            value={resolvedIncidents}
-            detail="Successfully closed"
-            accent="#047857"
-          />
-
-          <StatCard
-            label="Barangays Affected"
-            value={affectedBarangays}
-            detail="Locations with incidents"
-            accent="#2563eb"
-          />
-
-        </div>
-
-        {/* =====================================
-            INCIDENT MAP
-        ===================================== */}
-        <section style={sectionStyle}>
-
-          <div style={sectionHeaderContainerStyle}>
-            <div>
-              <div style={sectionEyebrowStyle}>
-                LIVE MONITORING
-              </div>
-
-              <h2 style={sectionTitleStyle}>
-                Incident Map
-              </h2>
-
-              <p style={sectionDescriptionStyle}>
-                Geographic overview of reported incidents and affected areas.
-              </p>
-            </div>
-
-            <div style={mapLegendStyle}>
-              <span style={legendItemStyle}>
-                <span
-                  style={{
-                    ...legendDotStyle,
-                    background: "#dc2626",
-                  }}
-                />
-                Incident
-              </span>
-
-              <span style={legendItemStyle}>
-                <span
-                  style={{
-                    ...legendDotStyle,
-                    background: "#2563eb",
-                  }}
-                />
-                Location
-              </span>
-            </div>
-          </div>
-
-          <div style={mapContainerStyle}>
+          <div className="map">
             {loading ? (
-              <div style={mapLoadingStyle}>
-                <div style={loadingDotStyle}></div>
-                Loading incident data...
-              </div>
+              <div className="loading">Loading incident data...</div>
             ) : (
               <IncidentMap incidents={incidents} />
             )}
           </div>
-
         </section>
 
-        {/* =====================================
-            LOWER CONTENT
-        ===================================== */}
-        <div style={contentGridStyle}>
+        {/* LOWER GRID */}
+        <div className="dashboard-grid">
 
-          {/* =====================================
-              DISPATCH CENTER
-          ===================================== */}
-          <section style={sectionStyle}>
+          {/* DISPATCH */}
+          <section className="panel">
+            <PanelTitle
+              eyebrow="COMMUNICATIONS"
+              title="Staff Dispatch"
+              text="Send instructions to staff and responders."
+            />
 
-            <div style={sectionHeaderContainerStyle}>
-              <div>
-                <div style={sectionEyebrowStyle}>
-                  COMMUNICATIONS
-                </div>
-
-                <h2 style={sectionTitleStyle}>
-                  Staff Dispatch
-                </h2>
-
-                <p style={sectionDescriptionStyle}>
-                  Send operational instructions directly to staff and
-                  responders.
-                </p>
-              </div>
-            </div>
-
-            <form
-              onSubmit={handleSendMessage}
-              style={formStyle}
-            >
-
-              <div>
-                <label style={labelStyle}>
-                  Recipient
-                </label>
-
+            <form onSubmit={handleSendMessage} className="dispatch-form">
+              <label>
+                Recipient
                 <select
                   value={messageForm.receiver_id}
                   onChange={(e) =>
@@ -322,31 +180,21 @@ function AdminDashboard() {
                     })
                   }
                   required
-                  style={inputStyle}
                 >
-                  <option value="">
-                    Select staff member
-                  </option>
-
-                  {potentialResponders.map((user) => (
-                    <option
-                      key={user.id}
-                      value={user.id}
-                    >
+                  <option value="">Select staff member</option>
+                  {responders.map((user) => (
+                    <option key={user.id} value={user.id}>
                       {user.full_name} ({user.role || "user"})
                     </option>
                   ))}
                 </select>
-              </div>
+              </label>
 
-              <div>
-                <label style={labelStyle}>
-                  Message
-                </label>
-
+              <label>
+                Message
                 <textarea
-                  placeholder="Enter an operational update or task instruction..."
-                  rows="4"
+                  rows="3"
+                  placeholder="Enter operational instructions..."
                   value={messageForm.message}
                   onChange={(e) =>
                     setMessageForm({
@@ -355,803 +203,579 @@ function AdminDashboard() {
                     })
                   }
                   required
-                  style={{
-                    ...inputStyle,
-                    resize: "vertical",
-                    minHeight: "100px",
-                  }}
                 />
-              </div>
+              </label>
 
-              <button
-                type="submit"
-                onMouseEnter={() => setBtnHover(true)}
-                onMouseLeave={() => setBtnHover(false)}
-                style={{
-                  ...primaryButtonStyle,
-                  background: btnHover ? "#065f46" : "#047857",
-                }}
-              >
+              <button className="send-btn" type="submit">
                 Send Dispatch
-                <span style={buttonArrowStyle}>→</span>
+                <span>→</span>
               </button>
-
             </form>
 
-            {/* DISPATCH HISTORY */}
-            <div style={historyContainerStyle}>
-
-              <div style={historyHeaderStyle}>
+            <div className="history">
+              <div className="history-head">
                 <div>
-                  <h3 style={historyTitleStyle}>
-                    Recent Dispatches
-                  </h3>
-
-                  <span style={historySubtitleStyle}>
-                    Latest messages sent by administrators
-                  </span>
+                  <h3>Recent Dispatches</h3>
+                  <small>Latest administrator messages</small>
                 </div>
-
-                <span style={countBadgeStyle}>
-                  {messages.length}
-                </span>
+                <b>{messages.length}</b>
               </div>
 
-              <div style={messageListStyle}>
-
+              <div className="message-list">
                 {messages.length === 0 ? (
-                  <div style={emptyStateStyle}>
-                    No dispatches have been sent yet.
-                  </div>
+                  <div className="empty">No dispatches yet.</div>
                 ) : (
                   messages.map((msg) => (
-                    <div
-                      key={msg.message_id}
-                      style={messageItemStyle}
-                    >
-                      <div style={messageTopStyle}>
-
-                        <div style={recipientStyle}>
-                          <span style={recipientIndicatorStyle}></span>
-                          To {msg.receiver_name}
-                        </div>
-
-                      </div>
-
-                      <p style={messageTextStyle}>
-                        {msg.message}
-                      </p>
+                    <div className="message" key={msg.message_id}>
+                      <strong>
+                        <span /> To {msg.receiver_name}
+                      </strong>
+                      <p>{msg.message}</p>
                     </div>
                   ))
                 )}
-
               </div>
             </div>
-
           </section>
 
-          {/* =====================================
-              ACCOUNT MANAGEMENT
-          ===================================== */}
-          <section style={sectionStyle}>
+          {/* USERS */}
+          <section className="panel">
+            <PanelTitle
+              eyebrow="ACCESS CONTROL"
+              title="User Accounts"
+              text="Manage operational account access."
+              count={users.length}
+            />
 
-            <div style={sectionHeaderContainerStyle}>
-              <div>
-                <div style={sectionEyebrowStyle}>
-                  ACCESS CONTROL
-                </div>
-
-                <h2 style={sectionTitleStyle}>
-                  User Accounts
-                </h2>
-
-                <p style={sectionDescriptionStyle}>
-                  Review account status and manage operational access.
-                </p>
-              </div>
-
-              <span style={countBadgeStyle}>
-                {users.length}
-              </span>
-            </div>
-
-            <div style={userListStyle}>
-
+            <div className="users">
               {users.length === 0 ? (
-                <div style={emptyStateStyle}>
-                  No user accounts found.
-                </div>
+                <div className="empty">No user accounts found.</div>
               ) : (
                 users.map((user) => {
-
-                  const isActive =
+                  const active =
                     user.status?.toLowerCase() === "active";
 
                   return (
-                    <div
-                      key={user.id}
-                      style={userItemStyle}
-                    >
-
-                      <div style={userInfoStyle}>
-
-                        <div style={avatarStyle}>
-                          {user.full_name
-                            ?.charAt(0)
-                            ?.toUpperCase() || "U"}
-                        </div>
-
-                        <div style={{ minWidth: 0 }}>
-                          <h4 style={userNameStyle}>
-                            {user.full_name}
-                          </h4>
-
-                          <p style={userEmailStyle}>
-                            {user.email}
-                          </p>
-                        </div>
-
+                    <div className="user" key={user.id}>
+                      <div className="avatar">
+                        {user.full_name?.charAt(0).toUpperCase() || "U"}
                       </div>
 
-                      <div style={userMetaStyle}>
-
-                        <span style={roleBadgeStyle}>
-                          {user.role || "USER"}
-                        </span>
-
-                        <span
-                          style={{
-                            ...accountStatusStyle,
-                            color: isActive
-                              ? "#047857"
-                              : "#b45309",
-                            background: isActive
-                              ? "#ecfdf5"
-                              : "#fffbeb",
-                            borderColor: isActive
-                              ? "#a7f3d0"
-                              : "#fde68a",
-                          }}
-                        >
-                          <span
-                            style={{
-                              ...smallStatusDotStyle,
-                              background: isActive
-                                ? "#059669"
-                                : "#d97706",
-                            }}
-                          />
-
-                          {user.status || "Unknown"}
-                        </span>
-
+                      <div className="user-info">
+                        <strong>{user.full_name}</strong>
+                        <small>{user.email}</small>
                       </div>
 
-                      <div style={userActionsStyle}>
+                      <span className="role">
+                        {user.role || "USER"}
+                      </span>
 
-                        <button
-                          onClick={() =>
-                            updateStatus(user.id, "Active")
-                          }
-                          style={activateButtonStyle}
-                        >
+                      <span className={`status ${active ? "active" : "inactive"}`}>
+                        {user.status || "Unknown"}
+                      </span>
+
+                      <div className="actions">
+                        <button onClick={() => updateStatus(user.id, "Active")}>
                           Activate
                         </button>
 
-                        <button
-                          onClick={() =>
-                            updateStatus(user.id, "Inactive")
-                          }
-                          style={deactivateButtonStyle}
-                        >
+                        <button onClick={() => updateStatus(user.id, "Inactive")}>
                           Deactivate
                         </button>
 
                         {user.role !== "admin" && (
                           <button
-                            onClick={() =>
-                              deleteUser(user.id)
-                            }
-                            style={deleteButtonStyle}
+                            className="delete"
+                            onClick={() => deleteUser(user.id)}
                           >
                             Delete
                           </button>
                         )}
-
                       </div>
-
                     </div>
                   );
                 })
               )}
-
             </div>
-
           </section>
-
         </div>
-
-      </div>
+      </main>
     </AdminLayout>
   );
 }
 
-// =====================================
-// STAT CARD COMPONENT
-// =====================================
-function StatCard({
-  label,
-  value,
-  detail,
-  accent,
-}) {
+function Stat({ label, value, type = "default" }) {
   return (
-    <div style={statCardStyle}>
-
-      <div
-        style={{
-          ...statAccentStyle,
-          background: accent,
-        }}
-      />
-
-      <div style={statContentStyle}>
-
-        <div style={statTopRowStyle}>
-          <span style={statLabelStyle}>
-            {label}
-          </span>
-
-          <span
-            style={{
-              ...statIndicatorStyle,
-              background: `${accent}18`,
-              color: accent,
-            }}
-          >
-            •
-          </span>
-        </div>
-
-        <div style={statValueStyle}>
-          {value}
-        </div>
-
-        <div style={statDetailStyle}>
-          {detail}
-        </div>
-
-      </div>
-
+    <div className={`stat ${type}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
 
-// =====================================
-// PAGE
-// =====================================
-const pageStyle = {
-  padding: "34px clamp(20px, 4vw, 56px) 60px",
-  background: "#f6f8f7",
-  minHeight: "100%",
-};
+function PanelTitle({ eyebrow, title, text, count }) {
+  return (
+    <div className="panel-title">
+      <div>
+        <span className="eyebrow">{eyebrow}</span>
+        <h2>{title}</h2>
+        <p>{text}</p>
+      </div>
 
-// =====================================
-// INTRO
-// =====================================
-const introStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-end",
-  gap: "24px",
-  marginBottom: "28px",
-  flexWrap: "wrap",
-};
+      {count !== undefined && <b className="count">{count}</b>}
+    </div>
+  );
+}
 
-const eyebrowStyle = {
-  fontSize: "11px",
-  fontWeight: "800",
-  letterSpacing: "1.4px",
-  color: "#047857",
-  marginBottom: "7px",
-};
+const styles = `
+.admin-dashboard {
+  padding: 24px clamp(18px, 3vw, 42px) 40px;
+  background: #f5f8f6;
+  color: #1d2b25;
+}
 
-const pageTitleStyle = {
-  margin: 0,
-  color: "#17211d",
-  fontSize: "28px",
-  lineHeight: 1.2,
-  fontWeight: "750",
-  letterSpacing: "-0.7px",
-};
+/* HEADER */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 20px;
+}
 
-const pageDescriptionStyle = {
-  margin: "8px 0 0",
-  color: "#66736d",
-  fontSize: "14px",
-  lineHeight: 1.6,
-  maxWidth: "620px",
-};
+.eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #087443;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
 
-const statusIndicatorStyle = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "8px",
-  padding: "8px 12px",
-  background: "#ffffff",
-  border: "1px solid #dce5df",
-  borderRadius: "7px",
-  color: "#466057",
-  fontSize: "12px",
-  fontWeight: "650",
-};
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.6px;
+}
 
-const statusDotStyle = {
-  width: "7px",
-  height: "7px",
-  borderRadius: "50%",
-  background: "#059669",
-};
+.dashboard-header p {
+  margin: 6px 0 0;
+  color: #6b7871;
+  font-size: 13px;
+}
 
-// =====================================
-// STATISTICS
-// =====================================
-const statsGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-  gap: "14px",
-  marginBottom: "22px",
-};
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  background: #fff;
+  border: 1px solid #dce6e0;
+  border-radius: 6px;
+  color: #53635b;
+  font-size: 11px;
+  font-weight: 700;
+}
 
-const statCardStyle = {
-  position: "relative",
-  display: "flex",
-  minHeight: "125px",
-  background: "#ffffff",
-  border: "1px solid #dfe7e2",
-  borderRadius: "10px",
-  overflow: "hidden",
-  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.02)",
-};
+.system-status span,
+.message strong span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0a8f55;
+}
 
-const statAccentStyle = {
-  width: "3px",
-  flexShrink: 0,
-};
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
 
-const statContentStyle = {
-  padding: "18px 19px",
-  width: "100%",
-};
+.stat {
+  position: relative;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #dce6e0;
+  border-radius: 8px;
+  border-left: 3px solid #31584a;
+}
 
-const statTopRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-};
+.stat.warning {
+  border-left-color: #e28a18;
+}
 
-const statLabelStyle = {
-  fontSize: "12px",
-  color: "#66736d",
-  fontWeight: "700",
-};
+.stat.success {
+  border-left-color: #087443;
+}
 
-const statIndicatorStyle = {
-  width: "20px",
-  height: "20px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "50%",
-  fontSize: "17px",
-  lineHeight: 1,
-};
+.stat.info {
+  border-left-color: #477b69;
+}
 
-const statValueStyle = {
-  marginTop: "9px",
-  fontSize: "30px",
-  lineHeight: 1,
-  color: "#17211d",
-  fontWeight: "750",
-  letterSpacing: "-1px",
-};
+.stat span {
+  display: block;
+  color: #738078;
+  font-size: 11px;
+  font-weight: 700;
+}
 
-const statDetailStyle = {
-  marginTop: "9px",
-  color: "#8a9690",
-  fontSize: "11px",
-};
+.stat strong {
+  display: block;
+  margin-top: 6px;
+  color: #18251f;
+  font-size: 27px;
+  line-height: 1;
+}
 
-// =====================================
-// SECTIONS
-// =====================================
-const sectionStyle = {
-  background: "#ffffff",
-  border: "1px solid #dfe7e2",
-  borderRadius: "10px",
-  padding: "24px",
-  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.02)",
-  marginBottom: "22px",
-};
+/* PANELS */
+.panel {
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #dce6e0;
+  border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(20, 50, 38, .03);
+}
 
-const sectionHeaderContainerStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
-  gap: "20px",
-  marginBottom: "20px",
-};
+.map-panel {
+  margin-bottom: 16px;
+}
 
-const sectionEyebrowStyle = {
-  fontSize: "10px",
-  fontWeight: "800",
-  letterSpacing: "1.2px",
-  color: "#87938d",
-  marginBottom: "5px",
-};
+.panel-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 14px;
+}
 
-const sectionTitleStyle = {
-  margin: 0,
-  color: "#17211d",
-  fontSize: "19px",
-  fontWeight: "750",
-  letterSpacing: "-0.3px",
-};
+.panel-title h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 750;
+  color: #1c2b24;
+}
 
-const sectionDescriptionStyle = {
-  margin: "5px 0 0",
-  color: "#77837d",
-  fontSize: "12.5px",
-  lineHeight: 1.5,
-};
+.panel-title p {
+  margin: 4px 0 0;
+  color: #78847e;
+  font-size: 12px;
+}
 
-// =====================================
-// MAP
-// =====================================
-const mapLegendStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "14px",
-  paddingTop: "3px",
-};
+.count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  background: #edf5f0;
+  color: #087443;
+  border-radius: 5px;
+  font-size: 11px;
+}
 
-const legendItemStyle = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "6px",
-  fontSize: "11px",
-  color: "#66736d",
-  fontWeight: "600",
-};
+/* MAP */
+.map {
+  height: 320px;
+  overflow: hidden;
+  border: 1px solid #dce6e0;
+  border-radius: 7px;
+  background: #f1f5f2;
+}
 
-const legendDotStyle = {
-  width: "7px",
-  height: "7px",
-  borderRadius: "50%",
-};
+.loading {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #718078;
+  font-size: 12px;
+}
 
-const mapContainerStyle = {
-  height: "430px",
-  border: "1px solid #dfe7e2",
-  borderRadius: "8px",
-  overflow: "hidden",
-  background: "#f4f7f5",
-};
+/* LOWER GRID */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 16px;
+}
 
-const mapLoadingStyle = {
-  height: "100%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "9px",
-  color: "#7b8781",
-  fontSize: "13px",
-};
+/* FORM */
+.dispatch-form {
+  display: grid;
+  gap: 12px;
+}
 
-const loadingDotStyle = {
-  width: "7px",
-  height: "7px",
-  borderRadius: "50%",
-  background: "#059669",
-};
+.dispatch-form label {
+  color: #4d5b54;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
 
-// =====================================
-// LOWER GRID
-// =====================================
-const contentGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "minmax(0, 0.95fr) minmax(0, 1.05fr)",
-  gap: "22px",
-  alignItems: "start",
-};
+.dispatch-form select,
+.dispatch-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  padding: 9px 10px;
+  border: 1px solid #ccd9d1;
+  border-radius: 6px;
+  background: #fbfcfb;
+  color: #26342d;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
 
-// =====================================
-// FORM
-// =====================================
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "15px",
-};
+.dispatch-form textarea {
+  resize: none;
+}
 
-const labelStyle = {
-  display: "block",
-  marginBottom: "6px",
-  color: "#46534d",
-  fontSize: "11px",
-  fontWeight: "750",
-  letterSpacing: "0.5px",
-  textTransform: "uppercase",
-};
+.dispatch-form select:focus,
+.dispatch-form textarea:focus {
+  border-color: #0a8f55;
+  box-shadow: 0 0 0 2px rgba(10, 143, 85, .08);
+}
 
-const inputStyle = {
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "11px 12px",
-  border: "1px solid #ccd8d1",
-  borderRadius: "7px",
-  background: "#fbfcfb",
-  color: "#26332d",
-  fontSize: "13px",
-  outline: "none",
-  fontFamily: "inherit",
-};
+.send-btn {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 14px;
+  background: #087443;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
 
-const primaryButtonStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "8px",
-  width: "100%",
-  border: "none",
-  borderRadius: "7px",
-  padding: "11px 16px",
-  color: "#ffffff",
-  fontSize: "13px",
-  fontWeight: "700",
-  cursor: "pointer",
-  transition: "background 0.15s ease",
-};
+.send-btn:hover {
+  background: #065c36;
+}
 
-const buttonArrowStyle = {
-  fontSize: "16px",
-};
+.send-btn span {
+  margin-left: 7px;
+}
 
-// =====================================
-// MESSAGE HISTORY
-// =====================================
-const historyContainerStyle = {
-  marginTop: "25px",
-  paddingTop: "20px",
-  borderTop: "1px solid #e5ebe7",
-};
+/* HISTORY */
+.history {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e5ebe7;
+}
 
-const historyHeaderStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginBottom: "12px",
-};
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 9px;
+}
 
-const historyTitleStyle = {
-  margin: 0,
-  color: "#25322c",
-  fontSize: "13px",
-  fontWeight: "750",
-};
+.history-head h3 {
+  margin: 0;
+  font-size: 12px;
+}
 
-const historySubtitleStyle = {
-  display: "block",
-  marginTop: "3px",
-  color: "#8a9690",
-  fontSize: "11px",
-};
+.history-head small {
+  color: #8a9690;
+  font-size: 10px;
+}
 
-const countBadgeStyle = {
-  minWidth: "23px",
-  height: "23px",
-  padding: "0 6px",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  boxSizing: "border-box",
-  borderRadius: "5px",
-  background: "#f0f4f1",
-  border: "1px solid #dce5df",
-  color: "#52615a",
-  fontSize: "11px",
-  fontWeight: "750",
-};
+.history-head b {
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: #f0f5f2;
+  color: #087443;
+  font-size: 10px;
+}
 
-const messageListStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-  maxHeight: "265px",
-  overflowY: "auto",
-  paddingRight: "3px",
-};
+.message-list {
+  max-height: 180px;
+  overflow-y: auto;
+}
 
-const messageItemStyle = {
-  padding: "12px 13px",
-  background: "#fafcfb",
-  border: "1px solid #e2e9e5",
-  borderRadius: "7px",
-};
+.message {
+  padding: 9px 10px;
+  margin-bottom: 6px;
+  border: 1px solid #e1e9e4;
+  border-radius: 6px;
+  background: #fafcfb;
+}
 
-const messageTopStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  marginBottom: "7px",
-};
+.message strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #46554d;
+  font-size: 10px;
+}
 
-const recipientStyle = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "7px",
-  color: "#46534d",
-  fontSize: "11px",
-  fontWeight: "750",
-};
+.message p {
+  margin: 5px 0 0;
+  color: #6c7972;
+  font-size: 11px;
+  line-height: 1.45;
+}
 
-const recipientIndicatorStyle = {
-  width: "6px",
-  height: "6px",
-  borderRadius: "50%",
-  background: "#059669",
-};
+/* USERS */
+.users {
+  max-height: 350px;
+  overflow-y: auto;
+}
 
-const messageTextStyle = {
-  margin: 0,
-  color: "#65726c",
-  fontSize: "12.5px",
-  lineHeight: 1.55,
-};
+.user {
+  display: grid;
+  grid-template-columns: 30px minmax(130px, 1fr) auto auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 0;
+  border-bottom: 1px solid #edf1ee;
+}
 
-const emptyStateStyle = {
-  padding: "28px 16px",
-  textAlign: "center",
-  color: "#8a9690",
-  fontSize: "12px",
-  border: "1px dashed #d7e0db",
-  borderRadius: "7px",
-};
+.user:last-child {
+  border-bottom: 0;
+}
 
-// =====================================
-// USERS
-// =====================================
-const userListStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-  maxHeight: "535px",
-  overflowY: "auto",
-  paddingRight: "3px",
-};
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #eaf4ee;
+  color: #087443;
+  font-size: 11px;
+  font-weight: 800;
+}
 
-const userItemStyle = {
-  display: "grid",
-  gridTemplateColumns: "minmax(170px, 1fr) auto auto",
-  alignItems: "center",
-  gap: "12px",
-  padding: "13px",
-  border: "1px solid #e1e8e4",
-  borderRadius: "7px",
-  background: "#ffffff",
-};
+.user-info {
+  min-width: 0;
+}
 
-const userInfoStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  minWidth: 0,
-};
+.user-info strong,
+.user-info small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-const avatarStyle = {
-  width: "32px",
-  height: "32px",
-  flexShrink: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "7px",
-  background: "#edf4f0",
-  color: "#047857",
-  fontSize: "12px",
-  fontWeight: "800",
-};
+.user-info strong {
+  color: #29372f;
+  font-size: 11px;
+}
 
-const userNameStyle = {
-  margin: 0,
-  color: "#26332d",
-  fontSize: "12.5px",
-  fontWeight: "700",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-};
+.user-info small {
+  margin-top: 2px;
+  color: #8a9690;
+  font-size: 9px;
+}
 
-const userEmailStyle = {
-  margin: "3px 0 0",
-  color: "#8a9690",
-  fontSize: "10.5px",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-};
+.role,
+.status {
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
 
-const userMetaStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "7px",
-};
+.role {
+  background: #f1f4f2;
+  color: #65726b;
+}
 
-const roleBadgeStyle = {
-  padding: "4px 7px",
-  borderRadius: "4px",
-  background: "#f2f5f3",
-  border: "1px solid #dfe6e1",
-  color: "#65726c",
-  fontSize: "9px",
-  fontWeight: "800",
-  letterSpacing: "0.5px",
-  textTransform: "uppercase",
-};
+.status.active {
+  background: #e9f7ef;
+  color: #087443;
+}
 
-const accountStatusStyle = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "5px",
-  padding: "4px 7px",
-  border: "1px solid",
-  borderRadius: "4px",
-  fontSize: "9px",
-  fontWeight: "750",
-};
+.status.inactive {
+  background: #fff3df;
+  color: #b66a08;
+}
 
-const smallStatusDotStyle = {
-  width: "5px",
-  height: "5px",
-  borderRadius: "50%",
-};
+.actions {
+  display: flex;
+  gap: 4px;
+}
 
-const userActionsStyle = {
-  display: "flex",
-  gap: "5px",
-};
+.actions button {
+  padding: 5px 7px;
+  border: 1px solid #cfe0d6;
+  border-radius: 4px;
+  background: #f5faf7;
+  color: #087443;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-const activateButtonStyle = {
-  padding: "6px 8px",
-  border: "1px solid #b7e4d0",
-  borderRadius: "5px",
-  background: "#f1fbf6",
-  color: "#047857",
-  fontSize: "10px",
-  fontWeight: "700",
-  cursor: "pointer",
-};
+.actions button:hover {
+  background: #e7f3ec;
+}
 
-const deactivateButtonStyle = {
-  padding: "6px 8px",
-  border: "1px solid #ead9a8",
-  borderRadius: "5px",
-  background: "#fffdf4",
-  color: "#a16207",
-  fontSize: "10px",
-  fontWeight: "700",
-  cursor: "pointer",
-};
+.actions .delete {
+  border-color: #edcccc;
+  background: #fff7f7;
+  color: #b42318;
+}
 
-const deleteButtonStyle = {
-  padding: "6px 8px",
-  border: "1px solid #f0c4c4",
-  borderRadius: "5px",
-  background: "#fff8f8",
-  color: "#b42318",
-  fontSize: "10px",
-  fontWeight: "700",
-  cursor: "pointer",
-};
+.empty {
+  padding: 20px;
+  text-align: center;
+  color: #89958f;
+  font-size: 11px;
+  border: 1px dashed #d8e2dc;
+  border-radius: 6px;
+}
 
-export default AdminDashboard;
+/* RESPONSIVE */
+@media (max-width: 1050px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .map {
+    height: 280px;
+  }
+
+  .user {
+    grid-template-columns: 30px 1fr auto;
+  }
+
+  .user .role,
+  .user .status {
+    display: none;
+  }
+
+  .actions {
+    grid-column: 2 / -1;
+  }
+}
+`;
+
+export default function AdminDashboardWithStyles() {
+  return (
+    <>
+      <style>{styles}</style>
+      <AdminDashboard />
+    </>
+  );
+}
