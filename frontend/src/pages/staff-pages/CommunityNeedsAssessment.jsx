@@ -112,7 +112,7 @@ const CommunityNeedsAssessment = () => {
     statusColors[status] || { bg: "#e2e8f0", color: "#334155" };
 
   return (
-    <div style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+    <div className="staff-page-shell" style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
 
       {/* FIXED HEADER WITH ZERO OVERLAP */}
       <div style={{
@@ -138,7 +138,7 @@ const CommunityNeedsAssessment = () => {
       <StaffHeader />
       <StaffNavbar />
 
-      <div style={{ padding: "40px max(20px, 4%)" }}>
+      <div className="staff-page-content" style={{ padding: "40px max(20px, 4%)" }}>
 
         {/* ===================== FORM SECTION ===================== */}
         <div style={sectionStyle}>

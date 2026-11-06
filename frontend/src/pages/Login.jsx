@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { loginUser } from "../services/authService";
 
-// IMPORT YOUR IMAGE HERE
-import bgImage from "/src/assets/municipal-hall.png";
+import bgImage from "../assets/municipal-hall.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -52,8 +51,7 @@ function Login() {
         // Using Inter / Segoe UI fonts for a sharp, modern geometric look
         fontFamily: "'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif",
         
-        // Darker rich emerald-slate overlay to make the municipal image pop gracefully
-        backgroundImage: `linear-gradient(rgba(11, 27, 22, 0.65), rgba(15, 23, 42, 0.65)), url(${bgImage})`,
+        backgroundImage: `linear-gradient(rgba(11, 27, 22, 0.38), rgba(15, 23, 42, 0.38)), url("${bgImage}")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

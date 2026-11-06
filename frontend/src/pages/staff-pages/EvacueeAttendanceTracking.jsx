@@ -210,7 +210,7 @@ const EvacueeAttendanceTracking = () => {
 
   return (
 
-    <div style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+    <div className="staff-page-shell" style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
 
       {/* FIXED HEADER WITH ZERO OVERLAP */}
       <div style={{
@@ -237,7 +237,7 @@ const EvacueeAttendanceTracking = () => {
 
       <StaffNavbar />
 
-      <div style={{ padding: "40px max(20px, 4%)" }}>
+      <div className="staff-page-content" style={{ padding: "40px max(20px, 4%)" }}>
 
         {/* TOP GRID */}
 
@@ -453,11 +453,7 @@ const EvacueeAttendanceTracking = () => {
                       borderRadius: "16px",
                       border: "1px solid #e2e8f0",
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.02)",
-                      padding: "20px",
-                      borderTop:
-                        `6px solid ${getColor(
-                          item.status
-                        )}`
+                      padding: "20px"
                     }}
                   >
 

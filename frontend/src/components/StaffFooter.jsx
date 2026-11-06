@@ -1,10 +1,9 @@
-import React from "react";
-
 const StaffFooter = () => {
 
   return (
 
     <div
+      className="staff-footer"
       style={{
         background: "#0f172a",
         color: "white",
@@ -15,7 +14,7 @@ const StaffFooter = () => {
       }}
     >
 
-      © 2026 RELIEFNOTIFY | Disaster Response Management System
+      © 2026 RELIFENOTIFY | Disaster Response Management System
 
     </div>
 

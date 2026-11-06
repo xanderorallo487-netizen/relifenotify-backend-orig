@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 // COMPONENTS
@@ -7,13 +6,14 @@ import AdminLayout from "../components/AdminLayout";
 import IncidentMap from "../components/IncidentMap";
 
 function AdminDashboard() {
-  const navigate = useNavigate();
-
   // =====================================
   // STATES
   // =====================================
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [incidentError, setIncidentError] = useState("");
+  const [refreshingIncidents, setRefreshingIncidents] = useState(false);
+  const [lastIncidentUpdate, setLastIncidentUpdate] = useState(null);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [messageForm, setMessageForm] = useState({ receiver_id: "", message: "" });
@@ -22,40 +22,62 @@ function AdminDashboard() {
   // =====================================
   // FETCH DATA
   // =====================================
-  useEffect(() => {
-    fetchIncidents();
-    fetchUsers();
-    fetchMessages();
-  }, []);
-
-  const fetchIncidents = async () => {
+  const fetchIncidents = useCallback(async () => {
+    setRefreshingIncidents(true);
     try {
       const response = await axios.get("http://localhost:5000/api/incidents");
-      if (response.data.success) setIncidents(response.data.incidents);
+      if (!response.data?.success || !Array.isArray(response.data.incidents)) {
+        throw new Error(response.data?.error || "The incident service returned an invalid response.");
+      }
+
+      setIncidents(response.data.incidents);
+      setLastIncidentUpdate(new Date());
+      setIncidentError("");
     } catch (error) {
       console.error("Failed to fetch incidents:", error);
+      setIncidentError(
+        error.response?.data?.error ||
+        error.message ||
+        "Unable to load incident locations.",
+      );
     } finally {
       setLoading(false);
+      setRefreshingIncidents(false);
     }
-  };
+  }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
     }
-  };
+  }, []);
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/admin-messages");
       setMessages(response.data);
     } catch (error) {
       console.error("Failed to fetch messages:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const initialLoad = window.setTimeout(() => {
+      fetchIncidents();
+      fetchUsers();
+      fetchMessages();
+    }, 0);
+
+    const refreshInterval = setInterval(fetchIncidents, 30_000);
+
+    return () => {
+      window.clearTimeout(initialLoad);
+      clearInterval(refreshInterval);
+    };
+  }, [fetchIncidents, fetchMessages, fetchUsers]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -92,12 +114,6 @@ function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-  };
-
   // =====================================
   // COUNTS & FILTERED RECIPIENTS
   // =====================================
@@ -117,23 +133,23 @@ function AdminDashboard() {
       <div style={{ padding: "40px max(20px, 4%)" }}>
         
         {/* COUNTER CARDS */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "24px", marginBottom: "40px" }}>
-          <div style={cardStyle}>
+        <div className="admin-dashboard-stats" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "24px", marginBottom: "40px" }}>
+          <div className="admin-dashboard-stat" style={cardStyle}>
             <span style={{ fontSize: "28px", marginBottom: "8px" }}>🚨</span>
             <h3 style={cardLabelStyle}>Total Incidents</h3>
             <h1 style={cardValueStyle}>{totalIncidents}</h1>
           </div>
-          <div style={cardStyle}>
+          <div className="admin-dashboard-stat" style={cardStyle}>
             <span style={{ fontSize: "28px", marginBottom: "8px" }}>⏳</span>
             <h3 style={cardLabelStyle}>Ongoing</h3>
             <h1 style={{ ...cardValueStyle, color: "#d97706" }}>{ongoingIncidents}</h1>
           </div>
-          <div style={cardStyle}>
+          <div className="admin-dashboard-stat" style={cardStyle}>
             <span style={{ fontSize: "28px", marginBottom: "8px" }}>✅</span>
             <h3 style={cardLabelStyle}>Resolved</h3>
             <h1 style={{ ...cardValueStyle, color: "#059669" }}>{resolvedIncidents}</h1>
           </div>
-          <div style={cardStyle}>
+          <div className="admin-dashboard-stat" style={cardStyle}>
             <span style={{ fontSize: "28px", marginBottom: "8px" }}>📍</span>
             <h3 style={cardLabelStyle}>Barangays Affected</h3>
             <h1 style={{ ...cardValueStyle, color: "#2563eb" }}>{affectedBarangays}</h1>
@@ -142,18 +158,47 @@ function AdminDashboard() {
 
         {/* MAP SECTION */}
         <div style={sectionStyle}>
-          <h2 style={sectionHeaderStyle}>🗺️ Live GPS Incident Mapping Workspace</h2>
-          {loading ? (
-            <p style={{ color: "#64748b" }}>Loading mapping engines...</p>
-          ) : (
-            <div style={{ borderRadius: "14px", overflow: "hidden", border: "1px solid #e2e8f0", marginTop: "16px" }}>
-              <IncidentMap incidents={incidents} />
+          <div className="incident-map-heading">
+            <h2 style={sectionHeaderStyle}>🗺️ Live GPS Incident Mapping Workspace</h2>
+            <div className="incident-map-heading-actions">
+              <span>
+                {lastIncidentUpdate
+                  ? `Updated ${lastIncidentUpdate.toLocaleTimeString()}`
+                  : "Waiting for GPS data"}
+              </span>
+              <button
+                type="button"
+                onClick={fetchIncidents}
+                disabled={refreshingIncidents}
+                aria-label="Refresh incident locations"
+              >
+                {refreshingIncidents ? "Refreshing..." : "Refresh"}
+              </button>
             </div>
+          </div>
+          {loading ? (
+            <p className="incident-map-message" role="status">Loading incident locations...</p>
+          ) : incidentError && !lastIncidentUpdate ? (
+            <div className="incident-map-load-error" role="alert">
+              <p>Incident locations could not be loaded: {incidentError}</p>
+              <button type="button" onClick={fetchIncidents}>Try again</button>
+            </div>
+          ) : (
+            <>
+              {incidentError && (
+                <p className="incident-map-refresh-warning" role="status">
+                  Could not refresh incident locations. Showing the last successful update.
+                </p>
+              )}
+              <div className="incident-map-frame" style={{ borderRadius: "14px", overflow: "hidden", border: "1px solid #e2e8f0", marginTop: "16px" }}>
+                <IncidentMap incidents={incidents} />
+              </div>
+            </>
           )}
         </div>
 
         {/* TWO COLUMN GRID: MESSAGES & ACCOUNTS */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "32px" }}>
+        <div className="admin-dashboard-columns" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "32px" }}>
           
           {/* MODERN CHAT & DISPATCH SYSTEM */}
           <div style={sectionStyle}>

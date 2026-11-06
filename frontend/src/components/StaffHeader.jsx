@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useState
 } from "react";
@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import axios from "axios";
+import "./staff.css";
 
 const StaffHeader = () => {
 
@@ -259,17 +260,18 @@ const StaffHeader = () => {
   return (
 
     <div
+      className="staff-topbar"
       style={{
-        background: "#0f172a",
+        background: "#092f2b",
         color: "white",
-        padding: "18px 30px",
+        padding: "16px 28px",
         display: "flex",
         justifyContent:
           "space-between",
         alignItems:
           "center",
         boxShadow:
-          "0 2px 10px rgba(0,0,0,0.1)",
+          "0 4px 18px rgba(9,47,43,0.22)",
         position: "relative"
       }}
     >
@@ -282,10 +284,12 @@ const StaffHeader = () => {
           style={{
             margin: 0,
             fontSize: "24px",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            color: "#ffffff",
+            letterSpacing: "1px"
           }}
         >
-          RELIEFNOTIFY
+          RELIFENOTIFY
         </h2>
 
         <p
@@ -325,15 +329,17 @@ const StaffHeader = () => {
                 !showMessages
               )
             }
+            aria-label="Open admin messages"
+            aria-expanded={showMessages}
             style={{
               background:
-                "#1e293b",
+                "rgba(255,255,255,0.1)",
               border: "none",
               color: "white",
               fontSize: "20px",
               cursor: "pointer",
               padding: "10px 14px",
-              borderRadius: "10px",
+              borderRadius: "8px",
               position: "relative"
             }}
           >
@@ -379,6 +385,7 @@ const StaffHeader = () => {
           {showMessages && (
 
             <div
+              className="staff-message-panel"
               style={{
                 position:
                   "absolute",

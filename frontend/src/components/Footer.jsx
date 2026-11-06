@@ -2,6 +2,7 @@ function Footer() {
 
   return (
     <div
+      className="admin-footer"
       style={{
         backgroundColor: "#ffffff",
         padding: "20px",

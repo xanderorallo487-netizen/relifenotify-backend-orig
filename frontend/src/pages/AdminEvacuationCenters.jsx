@@ -151,8 +151,8 @@ const AdminEvacuationCenters = () => {
               borderRadius: "14px",
               border: "1px solid #e2e8f0",
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.03)",
-              position: "sticky",
-              top: "24px"
+              position: "relative",
+              top: 0
             }}
           >
             <h2 style={{ margin: "0 0 6px 0", fontSize: "24px", fontWeight: "800", color: "#0f172a", letterSpacing: "-0.5px" }}>

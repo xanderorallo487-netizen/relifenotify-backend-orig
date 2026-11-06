@@ -154,7 +154,7 @@ const IncidentReports = () => {
 
   return (
 
-    <div style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+    <div className="staff-page-shell" style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
 
       {/* FIXED HEADER WITH ZERO OVERLAP */}
       <div style={{
@@ -184,7 +184,7 @@ const IncidentReports = () => {
       <StaffNavbar />
 
       {/* CONTENT */}
-      <div style={{ padding: "40px max(20px, 4%)" }}>
+      <div className="staff-page-content" style={{ padding: "40px max(20px, 4%)" }}>
 
         <div style={sectionStyle}>
 

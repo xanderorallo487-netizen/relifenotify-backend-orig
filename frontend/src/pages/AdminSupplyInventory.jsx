@@ -500,10 +500,6 @@ const AdminSupplyInventory = () => {
                   padding: "20px",
                   borderRadius: "16px",
                   border: "1px solid #e2e8f0",
-                  borderTop:
-                    `6px solid ${getStatusColor(
-                      item.inventory_status
-                    )}`,
                   boxShadow:
                     "0 4px 12px rgba(0, 0, 0, 0.02)"
                 }}

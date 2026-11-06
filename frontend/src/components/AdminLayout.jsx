@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
@@ -16,17 +15,22 @@ export default function AdminLayout({ title, subtitle, children }) {
   return (
     <div className="admin-root">
       <header className="admin-header">
-        <div>
-          <h1>{title}</h1>
-          {subtitle && <p>{subtitle}</p>}
+        <div className="admin-brand">
+          <span className="admin-brand-mark" aria-hidden="true">R</span>
+          <div>
+            <span className="admin-eyebrow">RELIFENOTIFY · RESPONSE OPERATIONS</span>
+            <h1>{title}</h1>
+            {subtitle && <p>{subtitle}</p>}
+          </div>
         </div>
         <div>
-          <button className="admin-btn" onClick={handleLogout}>Sign Out</button>
+          <span className="admin-role-label">Administrator</span>
+          <button className="admin-btn" onClick={handleLogout}>Sign out</button>
         </div>
       </header>
 
       <div className="admin-main">
-        <div className="admin-sidebar"><Sidebar /></div>
+        <aside className="admin-sidebar"><Sidebar /></aside>
         <div className="admin-content">{children}</div>
       </div>
 

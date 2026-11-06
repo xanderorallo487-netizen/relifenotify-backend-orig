@@ -40,11 +40,12 @@ const AdminReliefRequests = () => {
   return (
     <AdminLayout title={"Relief Requests"} subtitle={"Manage distribution status"}>
       <main style={{ padding: "40px max(24px, 5%)", maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
+        <div className="admin-relief-requests-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
           
           {requests.map((req) => (
             <div 
               key={req.request_id} 
+              className="admin-relief-request-card"
               style={{ 
                 background: "white", 
                 padding: "24px", 

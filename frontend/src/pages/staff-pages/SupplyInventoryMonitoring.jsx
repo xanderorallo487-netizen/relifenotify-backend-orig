@@ -180,7 +180,7 @@ const SupplyInventoryMonitoring = () => {
 
   return (
 
-    <div style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+    <div className="staff-page-shell" style={{ backgroundColor: "#f4f7f6", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
 
       {/* FIXED HEADER WITH ZERO OVERLAP */}
       <div style={{
@@ -207,7 +207,7 @@ const SupplyInventoryMonitoring = () => {
 
       <StaffNavbar />
 
-      <div style={{ padding: "40px max(20px, 4%)" }}>
+      <div className="staff-page-content" style={{ padding: "40px max(20px, 4%)" }}>
 
         <div style={sectionStyle}>
 
@@ -242,11 +242,6 @@ const SupplyInventoryMonitoring = () => {
 
                   boxShadow:
                     "0 4px 12px rgba(0, 0, 0, 0.02)",
-
-                  borderTop:
-                    `6px solid ${getStatusColor(
-                      item.inventory_status
-                    )}`
                 }}
               >
 
