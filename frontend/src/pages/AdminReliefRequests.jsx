@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 // COMPONENTS
 import AdminLayout from "../components/AdminLayout";
@@ -13,7 +13,7 @@ const AdminReliefRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin-relief-requests");
+      const response = await api.get("/admin-relief-requests");
       setRequests(response.data);
     } catch (error) {
       console.error(error);
@@ -22,7 +22,7 @@ const AdminReliefRequests = () => {
 
   const updateStatus = async (id, action) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin-relief-requests/${action}/${id}`);
+      await api.put(`/admin-relief-requests/${action}/${id}`);
       fetchRequests();
     } catch (error) {
       console.error(error);

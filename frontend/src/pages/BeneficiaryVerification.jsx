@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Imported for programmatic redirection
+import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 // COMPONENTS
 import AdminLayout from "../components/AdminLayout";
 
 function BeneficiaryVerification() {
-  const navigate = useNavigate(); // Initialize navigation hook
+  const navigate = useNavigate();
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [qrImages, setQrImages] = useState({});
 
@@ -29,8 +29,8 @@ function BeneficiaryVerification() {
 
   const fetchBeneficiaries = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/beneficiaries"
+      const response = await api.get(
+        "/beneficiaries"
       );
 
       if (response.data.success) {
@@ -47,8 +47,8 @@ function BeneficiaryVerification() {
 
     for (const person of data) {
       try {
-        const qrResponse = await axios.get(
-          `http://localhost:5000/api/beneficiaries/qr/${person.beneficiary_code}`
+        const qrResponse = await api.get(
+          `/beneficiaries/qr/${person.beneficiary_code}`
         );
         qrMap[person.id] = qrResponse.data.qr;
       } catch (err) {
@@ -61,8 +61,8 @@ function BeneficiaryVerification() {
 
   const claimRelief = async (id) => {
     try {
-      await axios.put(
-        `http://localhost:5000/api/beneficiaries/claim/${id}`
+      await api.put(
+        `/beneficiaries/claim/${id}`
       );
       fetchBeneficiaries();
     } catch (error) {

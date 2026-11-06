@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -31,8 +31,8 @@ const ReliefRequests = () => {
   // =====================================
   const fetchRequests = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/relief-requests"
+      const response = await api.get(
+        "/relief-requests"
       );
       setRequests(response.data);
     } catch (error) {
@@ -54,8 +54,8 @@ const ReliefRequests = () => {
     e.preventDefault();
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/relief-requests",
+      await api.post(
+        "/relief-requests",
         form
       );
 

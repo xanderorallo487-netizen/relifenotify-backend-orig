@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -35,8 +35,8 @@ const IncidentReports = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/incident-reports"
+        await api.get(
+          "/incident-reports"
         );
 
       setIncidents(response.data);
@@ -73,8 +73,8 @@ const IncidentReports = () => {
 
     try {
 
-      await axios.put(
-        `http://localhost:5000/api/incident-reports/${id}/status`,
+      await api.put(
+        `/incident-reports/${id}/status`,
         {
           status: editStatus
         }
@@ -323,11 +323,11 @@ const IncidentReports = () => {
                         {incident.photo ? (
 
                           <img
-                            src={`http://localhost:5000/uploads/${incident.photo}`}
+                            src={`/uploads/${incident.photo}`}
                             alt="Incident"
                             onClick={() =>
                               setSelectedImage(
-                                `http://localhost:5000/uploads/${incident.photo}`
+                                `/uploads/${incident.photo}`
                               )
                             }
                             style={{

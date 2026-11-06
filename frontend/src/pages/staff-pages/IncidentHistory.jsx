@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -32,17 +32,17 @@ const IncidentHistory = () => {
     try {
 
       let url =
-        "http://localhost:5000/api/incident-reports";
+        "/incident-reports";
 
       if (filter !== "all") {
 
         url =
-          `http://localhost:5000/api/incident-reports/status/${filter}`;
+          `/incident-reports/status/${filter}`;
 
       }
 
       const response =
-        await axios.get(url);
+        await api.get(url);
 
       setIncidents(response.data);
 

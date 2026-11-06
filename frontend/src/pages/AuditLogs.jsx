@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 // COMPONENTS
@@ -16,7 +16,7 @@ function AuditLogs() {
 
   const fetchLogs = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/audit-logs");
+      const response = await api.get("/audit-logs");
       if (response.data.success) setLogs(response.data.logs);
     } catch (error) {
       console.error("Failed to fetch logs:", error);

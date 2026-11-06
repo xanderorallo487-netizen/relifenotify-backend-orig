@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -60,8 +60,8 @@ const RescueResponseCoordination = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/rescue-response-coordination"
+        await api.get(
+          "/rescue-response-coordination"
         );
 
       setRecords(response.data);
@@ -98,8 +98,8 @@ const RescueResponseCoordination = () => {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/rescue-response-coordination",
+      await api.post(
+        "/rescue-response-coordination",
         form
       );
 

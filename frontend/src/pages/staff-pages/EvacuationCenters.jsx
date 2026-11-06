@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -35,8 +35,8 @@ const EvacuationCenters = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/evacuation-centers"
+        await api.get(
+          "/evacuation-centers"
         );
 
       setCenters(response.data);
@@ -89,8 +89,8 @@ const EvacuationCenters = () => {
 
     try {
 
-      await axios.put(
-        `http://localhost:5000/api/evacuation-centers/${id}`,
+      await api.put(
+        `/evacuation-centers/${id}`,
         {
 
           current_occupancy:

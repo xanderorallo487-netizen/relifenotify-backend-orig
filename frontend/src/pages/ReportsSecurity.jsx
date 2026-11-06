@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 // COMPONENTS
 import AdminLayout from "../components/AdminLayout";
@@ -15,8 +15,8 @@ function ReportsSecurity() {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/reports/analytics"
+      const response = await api.get(
+        "/reports/analytics"
       );
 
       if (response.data.success) {

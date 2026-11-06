@@ -7,8 +7,8 @@ import {
   useNavigate
 } from "react-router-dom";
 
-import axios from "axios";
 import "./staff.css";
+import api from "../services/api";
 
 const StaffHeader = () => {
 
@@ -64,8 +64,8 @@ const StaffHeader = () => {
       try {
 
         const response =
-          await axios.get(
-            `http://localhost:5000/api/admin-messages/${user?.id}`
+          await api.get(
+            `/admin-messages/${user?.id}`
           );
 
         setMessages(
@@ -133,8 +133,8 @@ const StaffHeader = () => {
 
         // SEND REPLY
 
-        await axios.post(
-          "http://localhost:5000/api/admin-messages/reply",
+        await api.post(
+          "/admin-messages/reply",
           {
 
             sender_id:
@@ -154,8 +154,8 @@ const StaffHeader = () => {
 
         // MARK MESSAGE AS READ
 
-        await axios.put(
-          `http://localhost:5000/api/admin-messages/read/${msg.message_id}`
+        await api.put(
+          `/admin-messages/read/${msg.message_id}`
         );
 
         // REMOVE MESSAGE FROM UI
@@ -221,8 +221,8 @@ const StaffHeader = () => {
 
         if (user) {
 
-          await axios.post(
-            "http://localhost:5000/api/audit-logs/create",
+          await api.post(
+            "/audit-logs/create",
             {
 
               action_type:
@@ -319,7 +319,8 @@ const StaffHeader = () => {
 
         <div
           style={{
-            position: "relative"
+            position:
+              "relative"
           }}
         >
 

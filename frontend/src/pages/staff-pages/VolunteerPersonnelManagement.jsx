@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import api from "../../services/api";
 
 import StaffHeader from "../../components/StaffHeader";
 import StaffNavbar from "../../components/StaffNavbar";
@@ -58,8 +58,8 @@ const VolunteerPersonnelManagement = () => {
     try {
 
       const response =
-        await axios.get(
-          "http://localhost:5000/api/volunteer-personnel-management"
+        await api.get(
+          "/volunteer-personnel-management"
         );
 
       setPersonnel(response.data);
@@ -99,8 +99,8 @@ const VolunteerPersonnelManagement = () => {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/volunteer-personnel-management",
+      await api.post(
+        "/volunteer-personnel-management",
         form
       );
 
